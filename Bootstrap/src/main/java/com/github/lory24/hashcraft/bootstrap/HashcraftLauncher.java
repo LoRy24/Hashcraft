@@ -1,5 +1,7 @@
 package com.github.lory24.hashcraft.bootstrap;
 
+import com.github.lory24.hashcraft.proxy.HashcraftProxyStarter;
+
 /**
  * The HashcraftLauncher is the class that will start the Proxy software. The major feature of this class is to
  * check for additional parameters and to verify that the user is using the required version (for now it's Java 18).
@@ -21,6 +23,6 @@ public class HashcraftLauncher {
         }
 
         // Launch the server in a new thread with a custom name
-        // TODO
+        HashcraftProxyStarter.startHashcraftProxy();
     }
 }

@@ -11,6 +11,7 @@
     <modules>
         <module>Bootstrap</module>
         <module>Proxy</module>
+        <module>Api</module>
     </modules>
 
     <properties>

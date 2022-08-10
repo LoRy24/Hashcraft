@@ -20,6 +20,16 @@ import java.util.Objects;
 public final class HashcraftProxyStarter {
 
     /**
+     * The custom logger printstream object
+     */
+    private static CustomLoggerPrintStream customLoggerPrintStream;
+
+    /**
+     * The hashcraft logger
+     */
+    private static HashcraftLogger hashcraftLogger;
+
+    /**
      * Load the configuration and start the Hashcraft proxy. This function is called from the Bootstrap's main class.
      */
     public static void startHashcraftProxy() {
@@ -28,9 +38,17 @@ public final class HashcraftProxyStarter {
         // it will stop the server
         if (!setupLogger() || !setupFoldersAndFiles()) {
             System.out.println("Error while setting up the server! Closing the software");
+            return;
         }
 
+        // Add the shutdown task
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(HashcraftProxyStarter::onShutdown));
+
         // Run the server in a new thread
+        Thread serverThread = new Thread(new Hashcraft(customLoggerPrintStream, hashcraftLogger)::start);
+        serverThread.setName("Proxy-Thread");
+        serverThread.start();
     }
 
     /**
@@ -68,11 +86,12 @@ public final class HashcraftProxyStarter {
     private static boolean setupLogger() {
         try {
             // Load the custom print stream
-            final CustomLoggerPrintStream customLoggerPrintStream = new CustomLoggerPrintStream(System.out);
-            final HashcraftLogger hashcraftLogger = new HashcraftLogger(HashcraftLogger.generateLoggerLogFile(), customLoggerPrintStream);
+            customLoggerPrintStream = new CustomLoggerPrintStream(System.out);
+            System.setOut(customLoggerPrintStream); System.setErr(customLoggerPrintStream);
+            hashcraftLogger = new HashcraftLogger(HashcraftLogger.generateLoggerLogFile(), customLoggerPrintStream);
 
             // Create the saving loop thread
-            Thread hashcraftLoggerSavingLoopThread = new Thread(() -> {
+            final Thread hashcraftLoggerSavingLoopThread = new Thread(() -> {
                 while (true) {
                     try {
                         hashcraftLogger.saveLogger();
@@ -82,13 +101,18 @@ public final class HashcraftProxyStarter {
             });
             hashcraftLoggerSavingLoopThread.setName("Hashcraft-Logger-SavingLoopThread");
             hashcraftLoggerSavingLoopThread.start();
-
-            // Set the error printStream
-            System.setErr(customLoggerPrintStream);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * This function will be executed when the software closes. It will also save the logs before the software loses them.
+     */
+    private static void onShutdown() {
+        hashcraftLogger.info("Saving and stopping the proxy server...");
+        hashcraftLogger.saveLogger(); // Save the logger before closing
     }
 }

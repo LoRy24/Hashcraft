@@ -27,6 +27,12 @@ public class HashcraftLogger extends Logger {
     private final CustomLoggerPrintStream customLoggerPrintStream;
 
     /**
+     * The log format.
+     */
+    @Getter
+    private static final String logFormat = "[%s-%s-%s %s:%s:%s] [Hashcraft %s] %s\n";
+
+    /**
      * Protected method to construct a logger for a named subsystem.
      * <p>
      * The logger will be initially configured with a null Level
@@ -50,8 +56,8 @@ public class HashcraftLogger extends Logger {
             public String format(@NotNull LogRecord record) {
                 Date date = new Date(); // Current date
                 // Return the logger format
-                return String.format("[%s-%s-%s %s:%s:%s] [Hashcraft %s] %s\n", date.getMonth() + 1, date.getDate(), date.getYear() + 1900,
-                        date.getHours(), date.getMinutes(), date.getSeconds(), record.getLevel(), record.getMessage());
+                return String.format(logFormat, date.getMonth() + 1, date.getDate(), date.getYear() + 1900, date.getHours(), date.getMinutes(),
+                        date.getSeconds(), record.getLevel(), record.getMessage());
             }
         };
 
@@ -91,5 +97,26 @@ public class HashcraftLogger extends Logger {
                 (float) date.getSeconds()));
         logFile.createNewFile();
         return logFile;
+    }
+
+    /**
+     * Log a message, with no arguments.
+     * <p>
+     * If the logger is currently enabled for the given message
+     * level then the given message is forwarded to all the
+     * registered output Handler objects.
+     *
+     * @param level One of the message level identifiers, e.g., SEVERE
+     * @param msg   The string message (or a key in the message catalog)
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void log(Level level, String msg) {
+        super.log(level, msg);
+        Date date = new Date(); // Current date
+        // Return the logger format
+        String log = String.format(logFormat, date.getMonth() + 1, date.getDate(), date.getYear() + 1900, date.getHours(),
+                date.getMinutes(), date.getSeconds(), level.getName(), msg);
+        customLoggerPrintStream.getBuffer().append(log);
     }
 }

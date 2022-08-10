@@ -1,5 +1,8 @@
 package com.github.lory24.hashcraft.proxy;
 
+import com.github.lory24.hashcraft.proxy.logger.CustomLoggerPrintStream;
+import com.github.lory24.hashcraft.proxy.logger.HashcraftLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,9 +23,11 @@ public final class HashcraftProxyStarter {
      * Load the configuration and start the Hashcraft proxy. This function is called from the Bootstrap's main class.
      */
     public static void startHashcraftProxy() {
-        // Create the folder that aren't created and load all the files. If an error occours it will disable the server
-        if (!setupFoldersAndFiles()) {
-            System.out.println("Stopping server: Error while creating all the files");
+
+        // Set up the logger and create the folders that aren't created and load all the files. If an error occours
+        // it will stop the server
+        if (!setupLogger() || !setupFoldersAndFiles()) {
+            System.out.println("Error while setting up the server! Closing the software");
         }
 
         // Run the server in a new thread
@@ -33,7 +38,7 @@ public final class HashcraftProxyStarter {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static boolean setupFoldersAndFiles() {
-        String[] foldersNames = {"libs", "plugins", "logs"}; // The folders name
+        String[] foldersNames = {"libs", "plugins"}; // The folders name
         // Create if it doesn't exist
         Arrays.stream(foldersNames).filter(s -> !(new File("./" + s).exists())).forEach(s -> new File("./" + s).mkdir());
 
@@ -53,5 +58,37 @@ public final class HashcraftProxyStarter {
         }
 
         return true; // Success
+    }
+
+    /**
+     * This internal function will set up the logger that will provide support when printing into the console. It will
+     * also implement the custom printstream used to catch also not programmed errors.
+     */
+    @SuppressWarnings("BusyWait")
+    private static boolean setupLogger() {
+        try {
+            // Load the custom print stream
+            final CustomLoggerPrintStream customLoggerPrintStream = new CustomLoggerPrintStream(System.out);
+            final HashcraftLogger hashcraftLogger = new HashcraftLogger(HashcraftLogger.generateLoggerLogFile(), customLoggerPrintStream);
+
+            // Create the saving loop thread
+            Thread hashcraftLoggerSavingLoopThread = new Thread(() -> {
+                while (true) {
+                    try {
+                        hashcraftLogger.saveLogger();
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ignored) {}
+                }
+            });
+            hashcraftLoggerSavingLoopThread.setName("Hashcraft-Logger-SavingLoopThread");
+            hashcraftLoggerSavingLoopThread.start();
+
+            // Set the error printStream
+            System.setErr(customLoggerPrintStream);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

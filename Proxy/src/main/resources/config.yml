@@ -2,4 +2,16 @@
 # Hashcraft Proxy configuration
 # Made by LoRy24
 #
-settings: {}
+settings:
+
+  #
+  # The host where the proxy should start listening on
+  # Value: IPv4 address
+  #
+  host: "127.0.0.1"
+
+  #
+  # The port where to listen the server.
+  # Value: an unsigned short (0-65535)
+  #
+  port: 25565

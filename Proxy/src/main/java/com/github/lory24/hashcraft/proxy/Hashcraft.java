@@ -5,6 +5,7 @@ import com.github.lory24.hashcraft.api.util.ProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.impl.HashcraftProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.logger.CustomLoggerPrintStream;
 import com.github.lory24.hashcraft.proxy.logger.HashcraftLogger;
+import com.github.lory24.hashcraft.proxy.netty.HashcraftChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -78,13 +79,13 @@ public class Hashcraft extends Proxy {
             ServerBootstrap serverBootstrap = new ServerBootstrap()
                     .group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true);
+                    .childHandler(new HashcraftChannelInitializer());
 
             // Bind the server
             serverBootstrap.bind(this.hashcraftConfiguration.getProxyPort()).sync().channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // Error while running sync func.
         } finally {
             // Shutdown the groups
             bossGroup.shutdownGracefully();

@@ -51,9 +51,7 @@ public class FrameDecoder extends ByteToMessageDecoder {
                 int length = PacketUtils.readVarInt(Unpooled.wrappedBuffer(buf));
 
                 // If the packet is empty
-                if (length <= 0) {
-                    throw new CorruptedFrameException("Invalid packet size! Must be > 0");
-                }
+                if (length <= 0) return;
 
                 // If the length and the readableBytes aren't the same, it will return
                 if (byteBuf.readableBytes() < length) {

@@ -1,6 +1,7 @@
 package com.github.lory24.hashcraft.proxy.netty;
 
-import com.github.lory24.hashcraft.protocol.FrameDecoder;
+import com.github.lory24.hashcraft.protocol.*;
+import com.github.lory24.hashcraft.proxy.handlers.InitialHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -17,6 +18,18 @@ public class HashcraftChannelInitializer extends ChannelInitializer<SocketChanne
         // Define a reference to the channelPipeline
         ChannelPipeline channelPipeline = socketChannel.pipeline();
 
-        channelPipeline.addLast("framer", new FrameDecoder()); // Add the framer
+        channelPipeline.addLast("frame-decoder", new FrameDecoder()); // Add the frame decoder.
+
+        // Add the minecraft decoder & encoder
+        channelPipeline.addLast("minecraft-decoder", new MinecraftPacketDecoder(ProtocolUtils.HANDSHAKE, true));
+
+        channelPipeline.addLast("frame-encoder", new FrameEncoder()); // Add the frame encoder
+
+        channelPipeline.addLast("minecraft-encoder", new MinecraftPacketEncoder(ProtocolUtils.HANDSHAKE, true));
+
+        // Add the HashcraftProxyHandler and set the packetHandler
+        channelPipeline.addLast("handler", new HashcraftProxyHandler());
+        channelPipeline.get(HashcraftProxyHandler.class).setPacketHandler(new InitialHandler());
+
     }
 }

@@ -20,11 +20,12 @@ public class HashcraftChannelInitializer extends ChannelInitializer<SocketChanne
 
         channelPipeline.addLast("frame-decoder", new FrameDecoder()); // Add the frame decoder.
 
-        // Add the minecraft decoder & encoder
+        // Add the minecraft decoder
         channelPipeline.addLast("minecraft-decoder", new MinecraftPacketDecoder(ProtocolUtils.HANDSHAKE, true));
 
         channelPipeline.addLast("frame-encoder", new FrameEncoder()); // Add the frame encoder
 
+        // Add the minecraft encoder
         channelPipeline.addLast("minecraft-encoder", new MinecraftPacketEncoder(ProtocolUtils.HANDSHAKE, true));
 
         // Add the HashcraftProxyHandler and set the packetHandler

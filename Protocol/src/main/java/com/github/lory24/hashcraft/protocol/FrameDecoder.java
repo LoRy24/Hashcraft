@@ -16,6 +16,9 @@ public class FrameDecoder extends ByteToMessageDecoder {
 
     /**
      * Decode (frame) the received data
+     * @param channelHandlerContext           the {@link ChannelHandlerContext} which this {@link ByteToMessageDecoder} belongs to
+     * @param byteBuf            the {@link ByteBuf} from which to read data
+     * @param list           the {@link List} to which decoded messages should be added
      */
     @Override
     protected void decode(@NotNull ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
@@ -45,7 +48,7 @@ public class FrameDecoder extends ByteToMessageDecoder {
             // If the byte is not negative
             if (buf[i] >= 0) {
                 // Read the length of the packet
-                int length = Packet.readVarInt(Unpooled.wrappedBuffer(buf));
+                int length = PacketUtils.readVarInt(Unpooled.wrappedBuffer(buf));
 
                 // If the packet is empty
                 if (length <= 0) {

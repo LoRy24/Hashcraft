@@ -7,7 +7,6 @@ import com.github.lory24.hashcraft.proxy.logger.CustomLoggerPrintStream;
 import com.github.lory24.hashcraft.proxy.logger.HashcraftLogger;
 import com.github.lory24.hashcraft.proxy.netty.HashcraftChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -62,6 +61,9 @@ public class Hashcraft extends Proxy {
         this.hashcraftConfiguration = new HashcraftProxyConfiguration(this.configFile); // Instance the hashcraft configuration object
         this.hashcraftConfiguration.loadConfiguration(); // Load data
         this.getLogger().info("Configuration loaded! Starting the proxy");
+
+        // Set the Proxy INSTANCE in the API
+        Proxy.setInstance(this);
 
         // Launch the netty server
         this.startListening();

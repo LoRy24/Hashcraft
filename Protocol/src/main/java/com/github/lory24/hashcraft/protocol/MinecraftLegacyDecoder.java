@@ -1,6 +1,6 @@
 package com.github.lory24.hashcraft.protocol;
 
-import com.github.lory24.hashcraft.api.Proxy;
+import com.github.lory24.hashcraft.protocol.packet.LegacyHandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.LegacyPingPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -29,7 +29,7 @@ public class MinecraftLegacyDecoder extends ByteToMessageDecoder {
      * @param list The output list
      */
     @Override
-    protected void decode(@NotNull ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+    protected void decode(@NotNull ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
 
         // If the channel isn't active, return
         if (!channelHandlerContext.channel().isActive()) {
@@ -51,7 +51,8 @@ public class MinecraftLegacyDecoder extends ByteToMessageDecoder {
             return;
         }
         else if (packetID == 0x02 && byteBuf.isReadable()) {
-            Proxy.getInstance().getLogger().warning("Legacy handshake is not supported!");
+            // Process the legacy handshake
+            list.add(new PacketWrapper(new LegacyHandshakePacket(), Unpooled.EMPTY_BUFFER));
             return;
         }
 

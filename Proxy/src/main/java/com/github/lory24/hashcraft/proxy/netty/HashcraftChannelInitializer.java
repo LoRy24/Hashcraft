@@ -15,24 +15,26 @@ public class HashcraftChannelInitializer extends ChannelInitializer<SocketChanne
      * @param socketChannel The future socket channel
      */
     @Override
-    protected void initChannel(@NotNull SocketChannel socketChannel) throws Exception {
+    protected void initChannel(@NotNull SocketChannel socketChannel) {
         // Define a reference to the channelPipeline
         ChannelPipeline channelPipeline = socketChannel.pipeline();
 
-        channelPipeline.addLast("frame-decoder", new FrameDecoder()); // Add the frame decoder.
-
         // Add the legacy decoder
-        channelPipeline.addBefore("frame-decoder", "legacy-decoder", new MinecraftLegacyDecoder());
+        channelPipeline.addLast("legacy-decoder", new MinecraftLegacyDecoder());
+
+        // Add the frame decoder.
+        channelPipeline.addLast("frame-decoder", new FrameDecoder());
 
         // Add the minecraft decoder
         channelPipeline.addLast("minecraft-decoder", new MinecraftPacketDecoder(ProtocolUtils.HANDSHAKE, true));
 
-        channelPipeline.addLast("frame-encoder", new FrameEncoder()); // Add the frame encoder
+        // Add the frame encoder
+        channelPipeline.addLast("frame-encoder", new FrameEncoder());
 
         // Add the minecraft encoder
         channelPipeline.addLast("minecraft-encoder", new MinecraftPacketEncoder(ProtocolUtils.HANDSHAKE, true));
 
-        // Add the HashcraftProxyHandler and set the packetHandler
+        // Add the HashcraftProxyHandler and set the initial packetHandler
         channelPipeline.addLast("handler", new HashcraftProxyHandler());
         channelPipeline.get(HashcraftProxyHandler.class).setPacketHandler(new InitialHandler(Proxy.getInstance()));
 

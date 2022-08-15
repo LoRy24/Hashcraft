@@ -27,5 +27,5 @@ public abstract class Packet extends PacketUtils {
      *
      * @param packetHandler The current packet handler. Can be used to handle the packet in the current contex
      */
-    public abstract void handle(final AbstractPacketHandler packetHandler);
+    public abstract void handle(final AbstractPacketHandler packetHandler) throws Exception;
 }

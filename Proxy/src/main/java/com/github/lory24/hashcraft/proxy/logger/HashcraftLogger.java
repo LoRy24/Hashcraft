@@ -30,7 +30,7 @@ public class HashcraftLogger extends Logger {
      * The log format.
      */
     @Getter
-    private static final String logFormat = "[%s-%s-%s %s:%s:%s] [Hashcraft %s] %s\n";
+    private static final String logFormat = "[%02d-%02d-%s %02d:%02d:%02d] [Hashcraft %s] %s\n";
 
     /**
      * Protected method to construct a logger for a named subsystem.

@@ -19,6 +19,13 @@ public enum ProtocolUtils {
             getToServer().registerPacket(HandshakePacket.class);
         }
     },
+
+    STATUS
+    {
+        {
+
+        }
+    }
     ;
 
     // The packets directions

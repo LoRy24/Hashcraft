@@ -44,7 +44,11 @@ public class HashcraftProxyHandler extends ChannelInboundHandlerAdapter {
                 // Try to handle the packet if the packet isn't null, and it should handle it
                 if (shouldHandlePacket && packetWrapper.getPacket() != null) {
                     packetWrapper.getPacket().handle(this.packetHandler);
+                    return;
                 }
+
+                // Handle the packetBuffer
+                this.packetHandler.handle(packetWrapper);
             }
             finally {
                 packetWrapper.release(); // Release the packet
@@ -58,7 +62,7 @@ public class HashcraftProxyHandler extends ChannelInboundHandlerAdapter {
      * @param ctx The channel handler context parameter
      */
     @Override
-    public void channelActive(@NotNull ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(@NotNull ChannelHandlerContext ctx) {
 
         // Call the connect function in the handler & instance the channel wrapper in this class obj
         this.channelWrapper = new ChannelWrapper(ctx.channel());
@@ -71,7 +75,7 @@ public class HashcraftProxyHandler extends ChannelInboundHandlerAdapter {
      * @param ctx The channel handler context parameter
      */
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
 
         // Call the disconnect function in the packetHandler obj
         this.packetHandler.disconnect(this.channelWrapper);

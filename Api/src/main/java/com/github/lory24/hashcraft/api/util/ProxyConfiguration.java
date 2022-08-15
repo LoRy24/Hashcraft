@@ -20,4 +20,9 @@ public abstract class ProxyConfiguration {
      * Obtain the port where the proxy should be hosted on
      */
     public abstract int getProxyPort();
+
+    /**
+     * Obtain if the proxy should notify the ping requests
+     */
+    public abstract boolean shouldSendPingNotifications();
 }

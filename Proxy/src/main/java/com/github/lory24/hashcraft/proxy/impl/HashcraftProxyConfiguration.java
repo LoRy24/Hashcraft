@@ -56,4 +56,12 @@ public class HashcraftProxyConfiguration extends ProxyConfiguration {
     public int getProxyPort() {
         return (int) this.yamlConfigurationData.get("settings.port"); // The port value
     }
+
+    /**
+     * Obtain if the proxy should notify the ping requests
+     */
+    @Override
+    public boolean shouldSendPingNotifications() {
+        return (boolean) this.yamlConfigurationData.get("settings.sendPingMessage");
+    }
 }

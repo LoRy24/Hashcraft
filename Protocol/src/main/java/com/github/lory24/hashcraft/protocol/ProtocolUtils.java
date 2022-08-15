@@ -1,6 +1,7 @@
 package com.github.lory24.hashcraft.protocol;
 
 import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
+import com.github.lory24.hashcraft.protocol.packet.StatusRequestPacket;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +24,16 @@ public enum ProtocolUtils {
     STATUS
     {
         {
+            /*
+             * TO SERVER
+             */
 
+            // Status request packet
+            getToServer().registerPacket(StatusRequestPacket.class);
+
+            /*
+             * TO CLIENT
+             */
         }
     }
     ;

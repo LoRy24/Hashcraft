@@ -3,6 +3,7 @@ package com.github.lory24.hashcraft.proxy.handlers;
 import com.github.lory24.hashcraft.api.Proxy;
 import com.github.lory24.hashcraft.protocol.ProtocolUtils;
 import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
+import com.github.lory24.hashcraft.protocol.packet.LegacyHandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.LegacyPingPacket;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
 import com.github.lory24.hashcraft.proxy.netty.PacketHandler;
@@ -91,13 +92,25 @@ public class InitialHandler extends PacketHandler {
     }
 
     /**
-     * This function will handle the handshake packet.
+     * This function will handle the legacy ping packet.
      *
      * @param legacyPingPacket The legacy ping packet
      */
     @Override
     public void handle(LegacyPingPacket legacyPingPacket) {
+        this.legacy = true;
         this.channelWrapper.close(); // Currently, not supported
+    }
+
+    /**
+     * This function will handle the legacy handshake packet.
+     *
+     * @param legacyHandshakePacket The legacy handshake packet
+     */
+    @Override
+    public void handle(LegacyHandshakePacket legacyHandshakePacket) {
+        this.legacy = true;
+        this.channelWrapper.close("Unsupported client"); // Version is too old
     }
 
     /**

@@ -2,6 +2,7 @@ package com.github.lory24.hashcraft.proxy.handlers;
 
 import com.github.lory24.hashcraft.api.Proxy;
 import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
+import com.github.lory24.hashcraft.protocol.packet.LegacyPingPacket;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
 import com.github.lory24.hashcraft.proxy.netty.PacketHandler;
 import lombok.Getter;
@@ -24,6 +25,16 @@ public class InitialHandler extends PacketHandler {
     public void handle(@NotNull HandshakePacket handshakePacket) {
         // Notify the next state ID
         Proxy.getInstance().getLogger().info("Handshake packet received! NextState ID: " + handshakePacket.getNextState());
+    }
+
+    /**
+     * This function will handle the handshake packet.
+     *
+     * @param legacyPingPacket The legacy ping packet
+     */
+    @Override
+    public void handle(LegacyPingPacket legacyPingPacket) throws Exception {
+
     }
 
     /**

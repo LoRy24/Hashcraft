@@ -1,7 +1,9 @@
 package com.github.lory24.hashcraft.protocol;
 
 import com.github.lory24.hashcraft.api.Proxy;
+import com.github.lory24.hashcraft.protocol.packet.LegacyPingPacket;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +47,7 @@ public class MinecraftLegacyDecoder extends ByteToMessageDecoder {
         // If the packetID is 0xFE, it's a LegacyPing request. Else if it's 0x02, it's a legacy handshake
         if (packetID == 0xFE) {
             // Process the legacy ping
-            Proxy.getInstance().getLogger().warning("Legacy ping is not supported!");
+            list.add(new PacketWrapper(new LegacyPingPacket(byteBuf.isReadable() && byteBuf.readUnsignedByte() == 0x01), Unpooled.EMPTY_BUFFER));
             return;
         }
         else if (packetID == 0x02 && byteBuf.isReadable()) {

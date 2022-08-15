@@ -5,6 +5,7 @@ import com.github.lory24.hashcraft.protocol.MinecraftPacketEncoder;
 import com.github.lory24.hashcraft.protocol.PacketWrapper;
 import com.github.lory24.hashcraft.protocol.ProtocolUtils;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -69,5 +70,34 @@ public class ChannelWrapper {
 
         // If it's not, write and flush
         this.channel.writeAndFlush(packet, channel.voidPromise());
+    }
+
+    /**
+     * Close the channel without sending anything
+     */
+    public void close() {
+        this.close(null); // Close without sending
+    }
+
+    /**
+     * This function will close the channel sending back an obj
+     *
+     * @param packet The object to send back
+     */
+    public void close(Object packet) {
+
+        // If the channel is closed, return
+        if (closed) return;
+
+        // Mark as closed
+        closed = true;
+
+        // If the packet isn't null and the channel is active, write the data
+        if (packet != null && this.channel.isActive()) {
+            this.channel.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE);
+            return;
+        }
+
+        this.channel.flush().close(); // Flush and close the channel
     }
 }

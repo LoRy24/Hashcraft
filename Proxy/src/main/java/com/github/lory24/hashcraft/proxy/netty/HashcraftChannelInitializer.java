@@ -1,5 +1,6 @@
 package com.github.lory24.hashcraft.proxy.netty;
 
+import com.github.lory24.hashcraft.api.Proxy;
 import com.github.lory24.hashcraft.protocol.*;
 import com.github.lory24.hashcraft.proxy.handlers.InitialHandler;
 import io.netty.channel.ChannelInitializer;
@@ -33,7 +34,7 @@ public class HashcraftChannelInitializer extends ChannelInitializer<SocketChanne
 
         // Add the HashcraftProxyHandler and set the packetHandler
         channelPipeline.addLast("handler", new HashcraftProxyHandler());
-        channelPipeline.get(HashcraftProxyHandler.class).setPacketHandler(new InitialHandler());
+        channelPipeline.get(HashcraftProxyHandler.class).setPacketHandler(new InitialHandler(Proxy.getInstance()));
 
     }
 }

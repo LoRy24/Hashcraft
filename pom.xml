@@ -13,6 +13,7 @@
         <module>Proxy</module>
         <module>Api</module>
         <module>Protocol</module>
+        <module>ChatComponent</module>
     </modules>
 
     <properties>

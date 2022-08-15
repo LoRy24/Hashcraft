@@ -6,12 +6,22 @@ settings:
 
   #
   # The host where the proxy should start listening on
+  #
   # Value: IPv4 address
   #
   host: "127.0.0.1"
 
   #
   # The port where to listen the server.
+  #
   # Value: an unsigned short (0-65535)
   #
   port: 25565
+
+  #
+  # This option will define if the proxy should send the message that says "/address:port has pinged." everytime someone
+  # pings the server.
+  #
+  # Value: Boolean (stored in a string: true or false)
+  #
+  sendPingMessage: true

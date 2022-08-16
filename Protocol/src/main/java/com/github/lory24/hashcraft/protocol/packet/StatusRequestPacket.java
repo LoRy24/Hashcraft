@@ -14,7 +14,7 @@ public class StatusRequestPacket extends Packet {
      */
     @Override
     public void read(ByteBuf buf) {
-
+        // Nothing to read...
     }
 
     /**
@@ -24,7 +24,7 @@ public class StatusRequestPacket extends Packet {
      */
     @Override
     public void write(ByteBuf buf) {
-
+        // Nothing to write...
     }
 
     /**

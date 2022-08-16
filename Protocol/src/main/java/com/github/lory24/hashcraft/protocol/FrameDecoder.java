@@ -1,10 +1,10 @@
 package com.github.lory24.hashcraft.protocol;
 
+import com.github.lory24.hashcraft.api.Proxy;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.codec.CorruptedFrameException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -23,60 +23,36 @@ public class FrameDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(@NotNull ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
 
-        // If the channel handler context is no more active, stop reading the data
-        if (!channelHandlerContext.channel().isActive()) {
-            // Skip all the readable bytes and return
-            byteBuf.skipBytes(byteBuf.readableBytes());
-            return;
-        }
-
-        // Mark the index
-        byteBuf.markReaderIndex();
-
-        // Mini buffer of 3 bytes
-        final byte[] buf = new byte[3];
-        for (int i = 0; i < buf.length; i++) { // Start filling the buf & do all the framer checks
-
-            // If the buf is not readable reset the index and return
-            if (!byteBuf.isReadable()) {
-                byteBuf.resetReaderIndex();
+        // Try to create the packet frame
+        try {
+            // If the channel handler context is no more active, stop reading the data
+            if (!channelHandlerContext.channel().isActive()) {
+                // Skip all the readable bytes and return
+                byteBuf.skipBytes(byteBuf.readableBytes());
                 return;
             }
 
-            buf[i] = byteBuf.readByte(); // Read the byte into the buf
+            // Mark the index
+            byteBuf.markReaderIndex();
 
-            // If the byte is not negative
-            if (buf[i] >= 0) {
-                // Read the length of the packet
-                int length = PacketUtils.readVarInt(Unpooled.wrappedBuffer(buf));
+            // Read the length of the packet
+            int length = PacketUtils.readVarInt(byteBuf);
 
-                // If the packet is empty
-                if (length <= 0) {
-                    throw new CorruptedFrameException("Length is < or equals to 0");
-                }
-
-                // If the length and the readableBytes aren't the same, it will return
-                if (byteBuf.readableBytes() < length) {
-                    byteBuf.resetReaderIndex(); // Reset the index
-                    return;
-                }
-
-                // If the byteBuf has a memory address, copy the packet bytes and put it in the list of this function
-                if (byteBuf.hasMemoryAddress()) {
-                    list.add(byteBuf.slice(byteBuf.readerIndex(), length).retain());
-                    return;
-                }
-
-                // Fix a sussy bug that has occoured in bungeecord
-                ByteBuf dst = channelHandlerContext.alloc()
-                        .directBuffer(length);
-                byteBuf.readBytes(dst);
-                list.add(dst);
-                return;
+            // Check if the length value is invalid and close the channel
+            if (length <= 0 || byteBuf.readableBytes() < length) {
+                Proxy.getInstance().getLogger().warning("Invalid packet length received from " + channelHandlerContext.channel().remoteAddress() + ": " + length);
+                channelHandlerContext.channel().close();
+                return; // Return
             }
-        }
 
-        // The packet is too big
-        throw new CorruptedFrameException("Packet data is too big.");
+            // Read the bytes
+            ByteBuf dest = Unpooled.buffer(length);
+            byteBuf.readBytes(dest);
+            list.add(dest);
+        } catch (Exception e) { // If an error occours, close the channel without any timeless
+            Proxy.getInstance().getLogger().warning("An error has occourred when framing a packet received from " +
+                    channelHandlerContext.channel().remoteAddress() +  ":" + e.getLocalizedMessage());
+            channelHandlerContext.channel().close();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.github.lory24.hashcraft.api;
 
+import com.github.lory24.hashcraft.api.scheduler.Scheduler;
 import com.github.lory24.hashcraft.api.util.ProxyConfiguration;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,4 +39,9 @@ public abstract class Proxy {
      * @see ProxyConfiguration
      */
     public abstract ProxyConfiguration getProxyConfiguration();
+
+    /**
+     * Return the scheduler object
+     */
+    public abstract Scheduler getScheduler();
 }

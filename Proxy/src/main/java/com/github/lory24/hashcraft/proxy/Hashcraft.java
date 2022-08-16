@@ -1,6 +1,7 @@
 package com.github.lory24.hashcraft.proxy;
 
 import com.github.lory24.hashcraft.api.Proxy;
+import com.github.lory24.hashcraft.api.scheduler.Scheduler;
 import com.github.lory24.hashcraft.api.util.ProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.impl.HashcraftProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.logger.CustomLoggerPrintStream;
@@ -40,6 +41,12 @@ public class Hashcraft extends Proxy {
     private HashcraftProxyConfiguration hashcraftConfiguration;
 
     /**
+     * The scheduler obj
+     */
+    @Getter
+    private HashcraftScheduler hashcraftScheduler;
+
+    /**
      * Inject the values instanced in the HashcraftProxyStarter
      *
      * @param customLoggerPrintStream The custom printStream object. Used to capture "everything" that is printed in the console
@@ -56,8 +63,12 @@ public class Hashcraft extends Proxy {
      */
     protected void start() {
 
+        // Load the scheduler
+        this.getLogger().info("Loading the scheduler...");
+        this.hashcraftScheduler = new HashcraftScheduler();
+        this.getLogger().info("Scheduler loaded! Loading configuration... ");
+
         // Load the Proxy configuration
-        this.getLogger().info("Loading configuration... ");
         this.hashcraftConfiguration = new HashcraftProxyConfiguration(this.configFile); // Instance the hashcraft configuration object
         this.hashcraftConfiguration.loadConfiguration(); // Load data
         this.getLogger().info("Configuration loaded! Starting the proxy");
@@ -112,5 +123,13 @@ public class Hashcraft extends Proxy {
     @Override
     public ProxyConfiguration getProxyConfiguration() {
         return Hashcraft.this.hashcraftConfiguration; // Return the instanced proxy configuration obj
+    }
+
+    /**
+     * Return the scheduler object
+     */
+    @Override
+    public Scheduler getScheduler() {
+        return Hashcraft.this.hashcraftScheduler; // Return the scheduler
     }
 }

@@ -5,6 +5,7 @@ import com.github.lory24.hashcraft.protocol.ProtocolUtils;
 import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.LegacyHandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.LegacyPingPacket;
+import com.github.lory24.hashcraft.protocol.packet.StatusRequestPacket;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
 import com.github.lory24.hashcraft.proxy.netty.PacketHandler;
 import com.github.lory24.hashcraft.proxy.utils.InitialHandlerState;
@@ -73,7 +74,6 @@ public class InitialHandler extends PacketHandler {
                 if (this.proxy.getProxyConfiguration().shouldSendPingNotifications()) this.getProxy().getLogger().info(this.channelWrapper.getRemoteAddress() + " has pinged.");
                 this.setState(InitialHandlerState.STATUS);
                 this.channelWrapper.updateProtocolUtils(ProtocolUtils.STATUS);
-                this.channelWrapper.close(); // Close the channel for now
                 break;
             }
 
@@ -89,6 +89,18 @@ public class InitialHandler extends PacketHandler {
                 break;
             }
         }
+    }
+
+    /**
+     * This function will handle the status request packet
+     *
+     * @param statusRequestPacket The request packet
+     */
+    @Override
+    public void handle(StatusRequestPacket statusRequestPacket) {
+        // Close the channel for now
+        System.out.println("Received status request packet");
+        channelWrapper.close();
     }
 
     /**

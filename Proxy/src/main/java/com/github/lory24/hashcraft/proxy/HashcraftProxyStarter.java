@@ -3,11 +3,7 @@ package com.github.lory24.hashcraft.proxy;
 import com.github.lory24.hashcraft.proxy.logger.CustomLoggerPrintStream;
 import com.github.lory24.hashcraft.proxy.logger.HashcraftLogger;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -34,7 +30,7 @@ public final class HashcraftProxyStarter {
      */
     public static void startHashcraftProxy() {
 
-        // Set up the logger and create the folders that aren't created and load all the files. If an error occours
+        // Set up the logger and create the folders that aren't created and load all the files. If an error occours11
         // it will stop the server
         if (!setupLogger() || !setupFoldersAndFiles()) {
             System.out.println("Error while setting up the server! Closing the software");
@@ -67,9 +63,10 @@ public final class HashcraftProxyStarter {
                 File configFile = new File("./config.yml");
                 if (configFile.exists()) break configFile;
                 configFile.createNewFile();
-                Files.copy(new File(Objects.requireNonNull(HashcraftProxyStarter.class.getClassLoader().getResource("config.yml"))
-                        .toURI()).toPath(), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException | URISyntaxException e) {
+                FileWriter configFileWriter = new FileWriter(configFile);
+                configFileWriter.write(new String(Objects.requireNonNull(HashcraftProxyStarter.class.getClassLoader().getResourceAsStream("config.yml")).readAllBytes()));
+                configFileWriter.flush(); configFileWriter.close();
+            } catch (IOException e) {
                 e.printStackTrace();
                 return false;
             }

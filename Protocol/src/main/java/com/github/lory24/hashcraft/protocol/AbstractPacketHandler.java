@@ -1,9 +1,6 @@
 package com.github.lory24.hashcraft.protocol;
 
-import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
-import com.github.lory24.hashcraft.protocol.packet.LegacyHandshakePacket;
-import com.github.lory24.hashcraft.protocol.packet.LegacyPingPacket;
-import com.github.lory24.hashcraft.protocol.packet.StatusRequestPacket;
+import com.github.lory24.hashcraft.protocol.packet.*;
 
 /**
  * The abstract packet handler. Contains function to handle each packet
@@ -38,4 +35,11 @@ public abstract class AbstractPacketHandler {
      * @param statusRequestPacket The request packet
      */
     public void handle(final StatusRequestPacket statusRequestPacket) throws Exception {}
+
+    /**
+     * This function will handle the status ping packet
+     *
+     * @param statusPingPacket The ping packet
+     */
+    public void handle(final StatusPingPacket statusPingPacket) {}
 }

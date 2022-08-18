@@ -1,7 +1,9 @@
 package com.github.lory24.hashcraft.protocol;
 
 import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
+import com.github.lory24.hashcraft.protocol.packet.StatusPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.StatusRequestPacket;
+import com.github.lory24.hashcraft.protocol.packet.StatusResponsePacket;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -30,10 +32,13 @@ public enum ProtocolUtils {
 
             // Status request packet
             getToServer().registerPacket(StatusRequestPacket.class);
+            getToServer().registerPacket(StatusPingPacket.class);
 
             /*
              * TO CLIENT
              */
+            getToClient().registerPacket(StatusResponsePacket.class);
+            getToClient().registerPacket(StatusPingPacket.class);
         }
     }
     ;

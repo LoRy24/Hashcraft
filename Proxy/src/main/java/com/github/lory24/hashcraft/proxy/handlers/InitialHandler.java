@@ -1,17 +1,18 @@
 package com.github.lory24.hashcraft.proxy.handlers;
 
 import com.github.lory24.hashcraft.api.Proxy;
+import com.github.lory24.hashcraft.api.util.ServerListPingResponse;
+import com.github.lory24.hashcraft.chatcomponent.TextChatComponent;
 import com.github.lory24.hashcraft.protocol.ProtocolUtils;
-import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
-import com.github.lory24.hashcraft.protocol.packet.LegacyHandshakePacket;
-import com.github.lory24.hashcraft.protocol.packet.LegacyPingPacket;
-import com.github.lory24.hashcraft.protocol.packet.StatusRequestPacket;
+import com.github.lory24.hashcraft.protocol.packet.*;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
 import com.github.lory24.hashcraft.proxy.netty.PacketHandler;
 import com.github.lory24.hashcraft.proxy.utils.InitialHandlerState;
+import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
@@ -46,6 +47,12 @@ public class InitialHandler extends PacketHandler {
      */
     @Getter
     private boolean legacy;
+
+    /**
+     * Gson instanced obj
+     */
+    @Getter
+    private final Gson gson = new Gson();
 
     /**
      * This function will handle the handshake packet.
@@ -96,11 +103,29 @@ public class InitialHandler extends PacketHandler {
      *
      * @param statusRequestPacket The request packet
      */
+    @SneakyThrows
     @Override
     public void handle(StatusRequestPacket statusRequestPacket) {
-        // Close the channel for now
-        System.out.println("Received status request packet");
-        channelWrapper.close();
+        // Create the status response object
+        ServerListPingResponse response = new ServerListPingResponse(new ServerListPingResponse.ServerListVersion("Hashcraft 1.0-SNAPSHOT", 47), new ServerListPingResponse.ServerListPlayers(100, 0, null),
+                new TextChatComponent("Hello World!"), null);
+
+        // Write the packet
+        this.channelWrapper.write(new StatusResponsePacket(gson.toJson(response)));
+    }
+
+    /**
+     * This function will handle the status ping packet
+     *
+     * @param statusPingPacket The ping packet
+     */
+    @Override
+    public void handle(StatusPingPacket statusPingPacket) {
+        // Send the packet
+        this.channelWrapper.write(statusPingPacket);
+
+        // Close the channel after sending the packet
+        this.channelWrapper.close();
     }
 
     /**

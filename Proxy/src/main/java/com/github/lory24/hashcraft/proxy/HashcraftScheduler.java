@@ -33,12 +33,18 @@ public class HashcraftScheduler extends Scheduler {
     private final HashMap<ProxyPlugin, List<Integer>> pluginsOwnedTasksIds = new HashMap<>();
 
     /**
+     * Internal tasks register
+     */
+    private final HashMap<Integer, Thread> internalTasksThreads = new HashMap<>();
+
+    /**
      * Generate a new id for a new task
      */
-    private int generateId() {
+    @Contract(pure = true)
+    private int generateId(@NotNull HashMap<Integer, Thread> register) {
         // Generate the id and return it
         int id = 0;
-        while (tasksThreads.containsKey(id)) id++;
+        while (register.containsKey(id)) id++;
         return id;
     }
 
@@ -102,7 +108,7 @@ public class HashcraftScheduler extends Scheduler {
     @Override
     public SchedulerTask runTaskAsyncrously(ProxyPlugin owner, Runnable task) {
         // Generate a new task id
-        int taskId = this.generateId();
+        int taskId = this.generateId(this.tasksThreads);
 
         // Create the task's thread
         Thread taskThread = new Thread(() -> {
@@ -184,5 +190,46 @@ public class HashcraftScheduler extends Scheduler {
         this.tasksThreads.remove(taskId);
         ProxyPlugin taskOwner = this.getTasksOwner(taskId);
         if (taskOwner != null) this.updateOwnedTasks(taskOwner, taskId, OwnedTasksUpdateOperation.REMOVE);
+    }
+
+    /**
+     * With this function the proxy will run asyncrously tasks without defining an owner. The task will be saved in the
+     * internal tasks registers.
+     *
+     * @param task The task that should be run
+     * @return a new scheduler task obj
+     */
+    public SchedulerTask runInternalTaskAsyncrously(Runnable task) {
+        // Generate a new task id
+        int taskId = this.generateId(this.internalTasksThreads);
+
+        // Create the task's thread
+        Thread taskThread = new Thread(() -> {
+            // Run the task
+            task.run();
+
+            // Remove the task from everything
+            this.internalTasksThreads.remove(taskId);
+        });
+        taskThread.setName("HashcraftInternalTask-" + taskId); // Update the thread name
+
+        // Register the task
+        this.internalTasksThreads.put(taskId, taskThread); // Register the thread
+
+        // Start the thread
+        taskThread.start();
+
+        // Return a new SchedulerTask obj
+        return new SchedulerTask(taskId, task);
+    }
+
+    /**
+     * Cancel an internal task.
+     */
+    public void cancelInternalTask(int taskId) {
+        this.internalTasksThreads.get(taskId).interrupt(); // Interrupt the task thread
+
+        // Unregister the task from the internal tasks register
+        this.internalTasksThreads.remove(taskId);
     }
 }

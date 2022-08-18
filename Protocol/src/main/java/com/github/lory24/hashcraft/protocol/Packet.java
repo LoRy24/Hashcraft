@@ -13,7 +13,7 @@ public abstract class Packet extends PacketUtils {
      *
      * @param buf The buf from where to read the data
      */
-    public abstract void read(final ByteBuf buf);
+    public abstract void read(final ByteBuf buf) throws Exception;
 
     /**
      * Write the data stored in the packet object into a netty bytebuf

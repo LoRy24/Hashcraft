@@ -1,6 +1,7 @@
 package com.github.lory24.hashcraft.protocol;
 
 import com.github.lory24.hashcraft.chatcomponent.ChatComponent;
+import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,11 @@ import java.nio.charset.StandardCharsets;
  * Some utils for writing and reading data form a netty bytebuf
  */
 public class PacketUtils {
+
+    /**
+     * A static GSON object instanced for optimization
+     */
+    private static Gson gson = new Gson();
 
     /**
      * Read a varint from a netty bytebuf
@@ -95,5 +101,29 @@ public class PacketUtils {
 
         // Return the new string
         return new String(stringBytes, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Read a chat component form a buffer. Remember that a chat compoent is sent by a string encoded in JSON.
+     *
+     * @param buffer The buffer from where to read the component
+     * @return The red string from the buffer
+     */
+    public static ChatComponent readChatComponent(final ByteBuf buffer) {
+
+        // Return the component
+        return gson.fromJson(readString(buffer), ChatComponent.class);
+    }
+
+    /**
+     * Write a chatcomponent into a buffer. It will convert it into a JSON object, and then it will send it via string
+     * using the static function in this class
+     *
+     * @param component The component to write into the buffer
+     * @param buffer Where to write the component
+     */
+    public static void writeChatComponent(ChatComponent component, final ByteBuf buffer) throws Exception {
+        // Write the string into the buffer
+        writeString(gson.toJson(component), buffer);
     }
 }

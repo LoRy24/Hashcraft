@@ -1,5 +1,6 @@
 package com.github.lory24.hashcraft.protocol;
 
+import com.github.lory24.hashcraft.chatcomponent.ChatComponent;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +40,7 @@ public class PacketUtils {
      * @param value The value that should be written in the buffer
      * @param byteBuf The buffer where to put the data
      */
-    public static void writeVarInt(int value, ByteBuf byteBuf) {
+    public static void writeVarInt(int value, final ByteBuf byteBuf) {
 
         // "Infinite" loop
         while (true) {
@@ -64,7 +65,7 @@ public class PacketUtils {
      * @param byteBuf Where to write the string
      * @param value The string to write in the buffer
      */
-    public static void writeString(@NotNull String value, ByteBuf byteBuf) throws Exception {
+    public static void writeString(@NotNull String value, final ByteBuf byteBuf) throws Exception {
 
         // Check if the string is too long
         if (value.getBytes(StandardCharsets.UTF_8).length > 32767) throw new Exception("String is too long!");
@@ -78,10 +79,13 @@ public class PacketUtils {
 
     /**
      * Read a string from a buffer
+     *
+     * @param buf The buffer from where to read the string
+     * @return The string
      */
     @NotNull
     @Contract("_ -> new")
-    public static String readString(ByteBuf buf) {
+    public static String readString(final ByteBuf buf) {
         // Read the size of the string
         int stringSize = readVarInt(buf);
 

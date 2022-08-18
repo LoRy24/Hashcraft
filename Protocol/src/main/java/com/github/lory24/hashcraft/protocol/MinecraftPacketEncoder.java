@@ -31,15 +31,20 @@ public class MinecraftPacketEncoder extends MessageToByteEncoder<Packet> {
      */
     @Override
     protected void encode(ChannelHandlerContext ctx, @NotNull Packet msg, ByteBuf out) {
-        // Get the direction of the packet
-        ProtocolUtils.DirectionalPackets protocolPacketDirection = fromServer ? protocolUtils.getToClient() : protocolUtils.getToServer();
+        try {
+            // Get the direction of the packet
+            ProtocolUtils.DirectionalPackets protocolPacketDirection = fromServer ? protocolUtils.getToClient() : protocolUtils.getToServer();
 
-        // Get the ID of the packet and if it's -1, return
-        int packetID = protocolPacketDirection.getPacketID(msg.getClass());
-        if (packetID == -1) return;
+            // Get the ID of the packet and if it's -1, return
+            int packetID = protocolPacketDirection.getPacketID(msg.getClass());
+            if (packetID == -1) return;
 
-        // Write the packet
-        PacketUtils.writeVarInt(packetID, out);
-        msg.write(out); // Write the packet's data into the output
+            // Write the packet
+            PacketUtils.writeVarInt(packetID, out);
+            msg.write(out); // Write the packet's data into the output
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.skipBytes(out.readableBytes());
+        }
     }
 }

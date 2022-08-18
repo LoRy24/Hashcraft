@@ -1,6 +1,10 @@
 package com.github.lory24.hashcraft.protocol;
 
 import com.github.lory24.hashcraft.protocol.packet.*;
+import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyHandshakePacket;
+import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyPingPacket;
+import com.github.lory24.hashcraft.protocol.packet.status.StatusPingPacket;
+import com.github.lory24.hashcraft.protocol.packet.status.StatusRequestPacket;
 
 /**
  * The abstract packet handler. Contains function to handle each packet

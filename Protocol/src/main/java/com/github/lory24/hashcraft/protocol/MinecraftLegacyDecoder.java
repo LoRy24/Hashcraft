@@ -1,7 +1,7 @@
 package com.github.lory24.hashcraft.protocol;
 
-import com.github.lory24.hashcraft.protocol.packet.LegacyHandshakePacket;
-import com.github.lory24.hashcraft.protocol.packet.LegacyPingPacket;
+import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyHandshakePacket;
+import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyPingPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;

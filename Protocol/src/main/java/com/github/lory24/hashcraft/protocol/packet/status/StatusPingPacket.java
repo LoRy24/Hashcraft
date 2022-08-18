@@ -1,18 +1,16 @@
-package com.github.lory24.hashcraft.protocol.packet;
+package com.github.lory24.hashcraft.protocol.packet.status;
 
 import com.github.lory24.hashcraft.protocol.AbstractPacketHandler;
 import com.github.lory24.hashcraft.protocol.Packet;
 import io.netty.buffer.ByteBuf;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor
-public class LegacyPingPacket extends Packet {
+public class StatusPingPacket extends Packet {
 
     /**
-     * If the connection is from version 1.5
+     * The payload
      */
-    private final boolean minecraftVersion1_5;
+    private long payload;
 
     /**
      * Read the data from a bytebuf into the packet object.
@@ -20,8 +18,8 @@ public class LegacyPingPacket extends Packet {
      * @param buf The buf from where to read the data
      */
     @Override
-    public void read(ByteBuf buf) {
-
+    public void read(@NotNull ByteBuf buf) {
+        this.payload = buf.readLong();
     }
 
     /**
@@ -30,8 +28,8 @@ public class LegacyPingPacket extends Packet {
      * @param buf The buf where to write the data
      */
     @Override
-    public void write(ByteBuf buf) {
-
+    public void write(@NotNull ByteBuf buf) throws Exception {
+        buf.writeLong(this.payload);
     }
 
     /**
@@ -41,7 +39,7 @@ public class LegacyPingPacket extends Packet {
      */
     @Override
     public void handle(@NotNull AbstractPacketHandler packetHandler) throws Exception {
-        // Handle with the packetHandler
+        // Handle with the handler
         packetHandler.handle(this);
     }
 }

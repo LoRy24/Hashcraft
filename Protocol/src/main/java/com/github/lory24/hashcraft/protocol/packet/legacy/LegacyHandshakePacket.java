@@ -1,4 +1,4 @@
-package com.github.lory24.hashcraft.protocol.packet;
+package com.github.lory24.hashcraft.protocol.packet.legacy;
 
 import com.github.lory24.hashcraft.protocol.AbstractPacketHandler;
 import com.github.lory24.hashcraft.protocol.Packet;

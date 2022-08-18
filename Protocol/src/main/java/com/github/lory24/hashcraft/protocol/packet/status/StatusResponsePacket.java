@@ -1,16 +1,19 @@
-package com.github.lory24.hashcraft.protocol.packet;
+package com.github.lory24.hashcraft.protocol.packet.status;
 
 import com.github.lory24.hashcraft.protocol.AbstractPacketHandler;
 import com.github.lory24.hashcraft.protocol.Packet;
 import io.netty.buffer.ByteBuf;
-import org.jetbrains.annotations.NotNull;
 
-public class StatusPingPacket extends Packet {
+public class StatusResponsePacket extends Packet {
 
     /**
-     * The payload
+     * The response string
      */
-    private long payload;
+    private String jsonResponse;
+
+    public StatusResponsePacket(String jsonResponse) {
+        this.jsonResponse = jsonResponse;
+    }
 
     /**
      * Read the data from a bytebuf into the packet object.
@@ -18,8 +21,8 @@ public class StatusPingPacket extends Packet {
      * @param buf The buf from where to read the data
      */
     @Override
-    public void read(@NotNull ByteBuf buf) {
-        this.payload = buf.readLong();
+    public void read(ByteBuf buf) {
+        this.jsonResponse = readString(buf);
     }
 
     /**
@@ -28,8 +31,8 @@ public class StatusPingPacket extends Packet {
      * @param buf The buf where to write the data
      */
     @Override
-    public void write(@NotNull ByteBuf buf) throws Exception {
-        buf.writeLong(this.payload);
+    public void write(ByteBuf buf) throws Exception {
+        writeString(this.jsonResponse, buf);
     }
 
     /**
@@ -38,8 +41,7 @@ public class StatusPingPacket extends Packet {
      * @param packetHandler The current packet handler. Can be used to handle the packet in the current contex
      */
     @Override
-    public void handle(@NotNull AbstractPacketHandler packetHandler) throws Exception {
-        // Handle with the handler
-        packetHandler.handle(this);
+    public void handle(AbstractPacketHandler packetHandler) throws Exception {
+
     }
 }

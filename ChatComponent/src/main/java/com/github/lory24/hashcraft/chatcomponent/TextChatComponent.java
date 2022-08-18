@@ -17,6 +17,7 @@ public class TextChatComponent extends ChatComponent {
      * Build the text chat component into a new json string
      * @return The json string
      */
+    @SuppressWarnings({"ConstantConditions", "unused"})
     public String buildTextChatComponent() {
         return this.toJson().replace("&", "\u00a7").replace("§", "\u00a7");
     }

@@ -28,8 +28,9 @@ public abstract class ChatComponent {
      * Put all the stuff into a JSON string
      * @return The json
      */
+    @SuppressWarnings("ConstantConditions")
     public String toJson() {
-        return new Gson().toJson(this);
+        return new Gson().toJson(this).replace("&", "\u00a7").replace("§", "\u00a7");
     }
 
     /**

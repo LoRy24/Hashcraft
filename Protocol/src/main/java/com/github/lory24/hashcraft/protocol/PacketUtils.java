@@ -14,11 +14,6 @@ import java.nio.charset.StandardCharsets;
 public class PacketUtils {
 
     /**
-     * A static GSON object instanced for optimization
-     */
-    private static Gson gson = new Gson();
-
-    /**
      * Read a varint from a netty bytebuf
      *
      * @param buf The buffer from where this function should read the VarInt
@@ -112,7 +107,7 @@ public class PacketUtils {
     public static ChatComponent readChatComponent(final ByteBuf buffer) {
 
         // Return the component
-        return gson.fromJson(readString(buffer), ChatComponent.class);
+        return ChatComponent.fromJson(readString(buffer));
     }
 
     /**
@@ -122,8 +117,9 @@ public class PacketUtils {
      * @param component The component to write into the buffer
      * @param buffer Where to write the component
      */
-    public static void writeChatComponent(ChatComponent component, final ByteBuf buffer) throws Exception {
+    public static void writeChatComponent(@NotNull ChatComponent component, final ByteBuf buffer) throws Exception {
+
         // Write the string into the buffer
-        writeString(gson.toJson(component), buffer);
+        writeString(component.toJson(), buffer);
     }
 }

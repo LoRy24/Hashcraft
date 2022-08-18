@@ -15,7 +15,7 @@ settings:
     #
     # Value: A string with colors (Written with the '§' or with the '&')
     #
-    messageOfTheDay
+    messageOfTheDay: "&7Just another &6Hashcraft Proxy"
 
   #
   # The host where the proxy should start listening on

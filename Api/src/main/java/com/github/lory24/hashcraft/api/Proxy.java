@@ -1,7 +1,6 @@
 package com.github.lory24.hashcraft.api;
 
 import com.github.lory24.hashcraft.api.scheduler.Scheduler;
-import com.github.lory24.hashcraft.api.util.ProxyConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,12 +32,6 @@ public abstract class Proxy {
      * of the default java.util's logger, in order to make the core more optimized (no Log4j :D).
      */
     public abstract Logger getLogger();
-
-    /**
-     * Return the instanced ProxyConfiguration object.
-     * @see ProxyConfiguration
-     */
-    public abstract ProxyConfiguration getProxyConfiguration();
 
     /**
      * Return the scheduler object

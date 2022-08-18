@@ -5,6 +5,7 @@ import com.github.lory24.hashcraft.api.util.ServerListPingResponse;
 import com.github.lory24.hashcraft.chatcomponent.TextChatComponent;
 import com.github.lory24.hashcraft.protocol.ProtocolUtils;
 import com.github.lory24.hashcraft.protocol.packet.*;
+import com.github.lory24.hashcraft.proxy.impl.ProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
 import com.github.lory24.hashcraft.proxy.netty.PacketHandler;
 import com.github.lory24.hashcraft.proxy.utils.InitialHandlerState;
@@ -78,7 +79,7 @@ public class InitialHandler extends PacketHandler {
             // Status: Set up the status state and notify the ping
             case 1: {
                 // Notify if enabled
-                if (this.proxy.getProxyConfiguration().shouldSendPingNotifications()) this.getProxy().getLogger().info(this.channelWrapper.getRemoteAddress() + " has pinged.");
+                if (Boolean.parseBoolean(String.valueOf(ProxyConfiguration.SHOUD_SEND_PING_NOTIFICATIONS.get()))) this.getProxy().getLogger().info(this.channelWrapper.getRemoteAddress() + " has pinged.");
                 this.setState(InitialHandlerState.STATUS);
                 this.channelWrapper.updateProtocolUtils(ProtocolUtils.STATUS);
                 break;

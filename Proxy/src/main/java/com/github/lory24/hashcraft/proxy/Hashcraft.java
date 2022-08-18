@@ -2,8 +2,8 @@ package com.github.lory24.hashcraft.proxy;
 
 import com.github.lory24.hashcraft.api.Proxy;
 import com.github.lory24.hashcraft.api.scheduler.Scheduler;
-import com.github.lory24.hashcraft.api.util.ProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.impl.HashcraftProxyConfiguration;
+import com.github.lory24.hashcraft.proxy.impl.ProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.logger.CustomLoggerPrintStream;
 import com.github.lory24.hashcraft.proxy.logger.HashcraftLogger;
 import com.github.lory24.hashcraft.proxy.netty.HashcraftChannelInitializer;
@@ -95,7 +95,7 @@ public class Hashcraft extends Proxy {
                     .childHandler(new HashcraftChannelInitializer());
 
             // Bind the server
-            serverBootstrap.bind(this.hashcraftConfiguration.getProxyPort()).sync().channel().closeFuture().sync();
+            serverBootstrap.bind((Integer) ProxyConfiguration.PORXY_PORT.get()).sync().channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e); // Error while running sync func.
@@ -113,16 +113,6 @@ public class Hashcraft extends Proxy {
     @Override
     public Logger getLogger() {
         return Hashcraft.this.hashcraftLogger; // Return the instanced logger obj
-    }
-
-    /**
-     * Return the instanced ProxyConfiguration object.
-     *
-     * @see ProxyConfiguration
-     */
-    @Override
-    public ProxyConfiguration getProxyConfiguration() {
-        return Hashcraft.this.hashcraftConfiguration; // Return the instanced proxy configuration obj
     }
 
     /**

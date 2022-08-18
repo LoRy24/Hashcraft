@@ -14,4 +14,9 @@ public enum InitialHandlerState {
      * This state will be used when the initial handler is processing the status state
      */
     STATUS,
+
+    /**
+     * This state will be used by the InitialHandler when he is waiting for the ping packet during the status state
+     */
+    PING,
 }

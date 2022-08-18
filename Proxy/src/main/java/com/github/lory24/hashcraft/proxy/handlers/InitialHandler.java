@@ -107,12 +107,23 @@ public class InitialHandler extends PacketHandler {
     @SneakyThrows
     @Override
     public void handle(StatusRequestPacket statusRequestPacket) {
+
+        // If the state is not the STATUS one, close the connection and notify the problem
+        if (this.state != InitialHandlerState.STATUS) {
+            this.proxy.getLogger().warning("Not expecting status request packet during " + this.state + " state.");
+            this.channelWrapper.close();
+            return;
+        }
+
         // Create the status response object
         ServerListPingResponse response = new ServerListPingResponse(new ServerListPingResponse.ServerListVersion("Hashcraft 1.0-SNAPSHOT", 47), new ServerListPingResponse.ServerListPlayers(100, 0, null),
                 new TextChatComponent("Hello World!"), null);
 
         // Write the packet
         this.channelWrapper.write(new StatusResponsePacket(gson.toJson(response)));
+
+        // Change state to PING state
+        this.state = InitialHandlerState.PING;
     }
 
     /**
@@ -122,6 +133,14 @@ public class InitialHandler extends PacketHandler {
      */
     @Override
     public void handle(StatusPingPacket statusPingPacket) {
+
+        // If the state is not the PING one, close the connection and notify the problem
+        if (this.state != InitialHandlerState.PING) {
+            this.proxy.getLogger().warning("Not expecting ping packet during " + this.state + " state.");
+            this.channelWrapper.close();
+            return;
+        }
+
         // Send the packet
         this.channelWrapper.write(statusPingPacket);
 

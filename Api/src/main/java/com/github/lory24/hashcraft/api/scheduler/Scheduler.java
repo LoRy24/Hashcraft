@@ -1,6 +1,6 @@
 package com.github.lory24.hashcraft.api.scheduler;
 
-import com.github.lory24.hashcraft.api.ProxyPlugin;
+import com.github.lory24.hashcraft.api.plugin.ProxyPlugin;
 
 /**
  * The scheduler is an util that will be used to run actions syncrously or asyncrously from the server. It can be also

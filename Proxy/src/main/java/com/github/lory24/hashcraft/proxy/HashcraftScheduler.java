@@ -1,6 +1,6 @@
 package com.github.lory24.hashcraft.proxy;
 
-import com.github.lory24.hashcraft.api.ProxyPlugin;
+import com.github.lory24.hashcraft.api.plugin.ProxyPlugin;
 import com.github.lory24.hashcraft.api.scheduler.Scheduler;
 import com.github.lory24.hashcraft.api.scheduler.SchedulerTask;
 import org.jetbrains.annotations.Contract;

@@ -8,12 +8,14 @@ import com.github.lory24.hashcraft.proxy.logger.CustomLoggerPrintStream;
 import com.github.lory24.hashcraft.proxy.logger.HashcraftLogger;
 import com.github.lory24.hashcraft.proxy.netty.HashcraftChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.util.logging.Logger;
 
 /**
@@ -89,17 +91,33 @@ public class Hashcraft extends Proxy {
 
         // Set up the serverBootstrap and start listening
         try {
-            ServerBootstrap serverBootstrap = new ServerBootstrap()
-                    .group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new HashcraftChannelInitializer());
 
-            // Bind the server
-            serverBootstrap.bind((Integer) ProxyConfiguration.PORXY_PORT.get()).sync().channel().closeFuture().sync();
+            // Copy the host string & the port value
+            final String host = (String) ProxyConfiguration.PROXY_HOST.get();
+            final int port = (int) ProxyConfiguration.PORXY_PORT.get();
 
-        } catch (InterruptedException e) {
+            // Create the listener object
+            ChannelFutureListener channelFutureListener = channelFuture -> {
+                // If the listener has been started
+                if (channelFuture.isSuccess()) {
+                    this.getLogger().info("Listening on " + host + ":" + port);
+                    return;
+                }
+
+                // Otherwise
+                this.getLogger().warning("Error while listening on " + host + ". Error message: " + channelFuture.cause());
+            };
+
+            // Start the bootstrap
+            new ServerBootstrap()
+                    .group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+                    .childHandler(new HashcraftChannelInitializer()).localAddress(new InetSocketAddress(host, port)).bind().addListener(channelFutureListener)
+                    .sync().channel().closeFuture().sync();
+        }
+        catch (InterruptedException e) {
             throw new RuntimeException(e); // Error while running sync func.
-        } finally {
+        }
+        finally {
             // Shutdown the groups
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();

@@ -18,6 +18,6 @@ public class TextChatComponent extends ChatComponent {
      * @return The json string
      */
     public String buildTextChatComponent() {
-        return this.toJson().replace("§", "\\u00a7");
+        return this.toJson().replace("&", "\u00a7").replace("§", "\u00a7");
     }
 }

@@ -20,7 +20,7 @@ public abstract class Packet extends PacketUtils {
      *
      * @param buf The buf where to write the data
      */
-    public abstract void write(final ByteBuf buf);
+    public abstract void write(final ByteBuf buf) throws Exception;
 
     /**
      * This function will be executed on the packet to handle it.

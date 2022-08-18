@@ -19,4 +19,9 @@ public enum InitialHandlerState {
      * This state will be used by the InitialHandler when he is waiting for the ping packet during the status state
      */
     PING,
+
+    /**
+     * The login state. This will be used when the handshake receive has next state the value 2
+     */
+    LOGIN,
 }

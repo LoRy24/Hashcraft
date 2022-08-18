@@ -5,6 +5,12 @@ import com.github.lory24.hashcraft.api.util.ServerListPingResponse;
 import com.github.lory24.hashcraft.chatcomponent.TextChatComponent;
 import com.github.lory24.hashcraft.protocol.ProtocolUtils;
 import com.github.lory24.hashcraft.protocol.packet.*;
+import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyHandshakePacket;
+import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyPingPacket;
+import com.github.lory24.hashcraft.protocol.packet.login.LoginDisconnectPacket;
+import com.github.lory24.hashcraft.protocol.packet.status.StatusPingPacket;
+import com.github.lory24.hashcraft.protocol.packet.status.StatusRequestPacket;
+import com.github.lory24.hashcraft.protocol.packet.status.StatusResponsePacket;
 import com.github.lory24.hashcraft.proxy.impl.ProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
 import com.github.lory24.hashcraft.proxy.netty.PacketHandler;
@@ -50,6 +56,12 @@ public class InitialHandler extends PacketHandler {
     private boolean legacy;
 
     /**
+     * If the login connection should be started in offline mode
+     */
+    @Getter @Setter
+    private boolean onlineMode = false;
+
+    /**
      * Gson instanced obj
      */
     @Getter
@@ -77,24 +89,32 @@ public class InitialHandler extends PacketHandler {
         switch (handshakePacket.getNextState()) {
 
             // Status: Set up the status state and notify the ping
-            case 1: {
+            case 1 -> {
                 // Notify if enabled
                 if (Boolean.parseBoolean(String.valueOf(ProxyConfiguration.SHOUD_SEND_PING_NOTIFICATIONS.get()))) this.getProxy().getLogger().info(this.channelWrapper.getRemoteAddress() + " has pinged.");
                 this.setState(InitialHandlerState.STATUS);
                 this.channelWrapper.updateProtocolUtils(ProtocolUtils.STATUS);
-                break;
             }
+
 
             // Login
-            case 2: {
+            case 2 -> {
+                // Init the login state
+                this.setState(InitialHandlerState.LOGIN);
+                this.channelWrapper.updateProtocolUtils(ProtocolUtils.LOGIN);
 
+                // Send back a disconnect packet
+                this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe Proxy is not configured to allow login connection.\nPlease try again later!")));
+
+                // Close the channel
+                this.channelWrapper.close();
             }
 
+
             // Not expected: Close the channel and notify it
-            default: {
+            default -> {
                 this.channelWrapper.close();
                 this.proxy.getLogger().warning("Received an invalid NextState id: " + this.handshake.getNextState());
-                break;
             }
         }
     }
@@ -116,8 +136,9 @@ public class InitialHandler extends PacketHandler {
         }
 
         // Create the status response object
-        ServerListPingResponse response = new ServerListPingResponse(new ServerListPingResponse.ServerListVersion("Hashcraft 1.0-SNAPSHOT", 47), new ServerListPingResponse.ServerListPlayers(100, 0, null),
-                new TextChatComponent("Hello World!"), null);
+        ServerListPingResponse response = new ServerListPingResponse(new ServerListPingResponse.ServerListVersion("Hashcraft 1.0-SNAPSHOT", 47),
+                new ServerListPingResponse.ServerListPlayers(100, 0, null),
+                new TextChatComponent(ProxyConfiguration.SERVER_MESSAGE_OF_THE_DAY.getStringWithColors()), null);
 
         // Write the packet
         this.channelWrapper.write(new StatusResponsePacket(gson.toJson(response)));

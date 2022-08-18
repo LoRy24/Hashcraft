@@ -16,7 +16,6 @@ public class FrameEncoder extends MessageToByteEncoder<ByteBuf> {
      */
     @Override
     protected void encode(ChannelHandlerContext ctx, @NotNull ByteBuf msg, @NotNull ByteBuf out) {
-
         // Check function's documentation for more details
         out.ensureWritable(msg.readableBytes() + getVarIntSize(msg.readableBytes()));
 

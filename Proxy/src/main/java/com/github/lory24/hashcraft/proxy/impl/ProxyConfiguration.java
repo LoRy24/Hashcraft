@@ -10,7 +10,8 @@ public enum ProxyConfiguration {
 
     PROXY_HOST("settings.host"),
     PORXY_PORT("settings.port"),
-    SHOUD_SEND_PING_NOTIFICATIONS("settings.sendPingMessage")
+    SHOUD_SEND_PING_NOTIFICATIONS("settings.sendPingMessage"),
+    SERVER_MESSAGE_OF_THE_DAY("settings.serverListPing.messageOfTheDay"),
     ;
 
     /**
@@ -33,6 +34,7 @@ public enum ProxyConfiguration {
      */
     @NotNull
     public String getStringWithColors() {
-        return  ((String) this.get()).replace("§", "u00a7").replace("&", "\\u00a7");
+        return  ((String) this.get()).replace("§", "\u00a7")
+                .replace("&", "\u00a7");
     }
 }

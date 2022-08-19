@@ -69,6 +69,12 @@ public class InitialHandler extends PacketHandler {
     private final Gson gson = new Gson();
 
     /**
+     * Login start packet reference
+     */
+     @Getter
+     private LoginStartPacket loginStart;
+
+    /**
      * This function will handle the handshake packet.
      *
      * @param handshakePacket The handshake packet
@@ -196,19 +202,29 @@ public class InitialHandler extends PacketHandler {
      */
     @Override
     public void handle(@NotNull LoginStartPacket loginStartPacket) {
-        // Sout the username just for testing
-        System.out.println(loginStartPacket.getName());
+        // Instance the LoginStartPacket value in this class
+        this.loginStart = loginStartPacket;
 
         // If the initial handler is set to online mode, start the encryption procedure (Currently not developed)
         if (this.onlineMode) {
-            // Send back a disconnect packet
-            this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cOnline mode not supported!")));
-        }
-        else { // Otherwise, set up compression and send back the login success packet
 
             // Send back a disconnect packet
-            this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe Proxy is not configured to allow login connection.\nPlease try again later!")));
+            this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cOnline mode not supported!")));
+
+            // Close the channel
+            this.channelWrapper.close();
         }
+        else { // Otherwise, jump to the finishLogin function
+            this.finishLogin();
+        }
+    }
+
+    /**
+     * Internal function to finish the login process
+     */
+    private void finishLogin() {
+        // Send back a disconnect packet
+        this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe Proxy is not configured to allow login connection.\nPlease try again later!")));
 
         // Close the channel
         this.channelWrapper.close();

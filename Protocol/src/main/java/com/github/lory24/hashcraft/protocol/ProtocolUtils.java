@@ -56,6 +56,8 @@ public enum ProtocolUtils {
              * TO CLIENT
              */
             getToClient().registerPacket(LoginDisconnectPacket.class);
+            getToClient().registerPacket(null); // Encryption request not supported
+
         }
     }
     ;

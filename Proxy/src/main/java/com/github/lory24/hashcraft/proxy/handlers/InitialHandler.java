@@ -199,8 +199,16 @@ public class InitialHandler extends PacketHandler {
         // Sout the username just for testing
         System.out.println(loginStartPacket.getName());
 
-        // Send back a disconnect packet
-        this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe Proxy is not configured to allow login connection.\nPlease try again later!")));
+        // If the initial handler is set to online mode, start the encryption procedure (Currently not developed)
+        if (this.onlineMode) {
+            // Send back a disconnect packet
+            this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cOnline mode not supported!")));
+        }
+        else { // Otherwise, set up compression and send back the login success packet
+
+            // Send back a disconnect packet
+            this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe Proxy is not configured to allow login connection.\nPlease try again later!")));
+        }
 
         // Close the channel
         this.channelWrapper.close();

@@ -1,6 +1,7 @@
 package com.github.lory24.hashcraft.proxy;
 
 import com.github.lory24.hashcraft.api.Proxy;
+import com.github.lory24.hashcraft.api.plugin.PluginsManager;
 import com.github.lory24.hashcraft.api.scheduler.Scheduler;
 import com.github.lory24.hashcraft.proxy.impl.HashcraftProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.impl.ProxyConfiguration;
@@ -49,6 +50,12 @@ public class Hashcraft extends Proxy {
     private HashcraftScheduler hashcraftScheduler;
 
     /**
+     * The plugins' manager obj
+     */
+    @Getter
+    private HashcraftPluginsManager hashcraftPluginsManager;
+
+    /**
      * Inject the values instanced in the HashcraftProxyStarter
      *
      * @param customLoggerPrintStream The custom printStream object. Used to capture "everything" that is printed in the console
@@ -73,7 +80,16 @@ public class Hashcraft extends Proxy {
         // Load the Proxy configuration
         this.hashcraftConfiguration = new HashcraftProxyConfiguration(this.configFile); // Instance the hashcraft configuration object
         this.hashcraftConfiguration.loadConfiguration(); // Load data
-        this.getLogger().info("Configuration loaded! Starting the proxy");
+        this.getLogger().info("Configuration loaded! Loading plugins...");
+
+        // Load the plugins
+        this.hashcraftPluginsManager = new HashcraftPluginsManager(this);
+        this.hashcraftPluginsManager.loadAllPlugins();
+        this.getLogger().info("Plugins loaded! Starting the proxy...");
+
+        // Add the shutdown task
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(this::onShutdown));
 
         // Set the Proxy INSTANCE in the API
         Proxy.setInstance(this);
@@ -130,7 +146,7 @@ public class Hashcraft extends Proxy {
      */
     @Override
     public Logger getLogger() {
-        return Hashcraft.this.hashcraftLogger; // Return the instanced logger obj
+        return this.hashcraftLogger; // Return the instanced logger obj
     }
 
     /**
@@ -138,6 +154,34 @@ public class Hashcraft extends Proxy {
      */
     @Override
     public Scheduler getScheduler() {
-        return Hashcraft.this.hashcraftScheduler; // Return the scheduler
+        return this.hashcraftScheduler; // Return the scheduler
+    }
+
+    /**
+     * Return the plugins' manager instanced object
+     */
+    @Override
+    public PluginsManager getPluginsManager() {
+        return this.hashcraftPluginsManager; // Return the ins
+    }
+
+    /**
+     * This function will be executed when the software closes. It will also save the logs before the software loses them.
+     */
+    private void onShutdown() {
+        // Unload all the plugins
+        this.getLogger().info("Closing the server: Disabling the plugins...");
+        this.hashcraftPluginsManager.unloadAllPlugins();
+
+        // Cancel all the tasks
+        this.getLogger().info("Plugins disabled! Cancelling all the scheduler tasks...");
+        this.hashcraftScheduler.cancelAllTasks();
+
+        // Save the logger before closing
+        this.getLogger().info("Tasks cancelled. Saving logs.");
+        this.hashcraftLogger.saveLogger();
+
+        // Final notify
+        System.out.println("Done. Bye!");
     }
 }

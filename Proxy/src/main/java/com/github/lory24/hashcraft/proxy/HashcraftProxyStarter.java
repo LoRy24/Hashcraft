@@ -37,10 +37,6 @@ public final class HashcraftProxyStarter {
             return;
         }
 
-        // Add the shutdown task
-        Runtime.getRuntime().addShutdownHook(
-                new Thread(HashcraftProxyStarter::onShutdown));
-
         // Run the server in a new thread
         Thread serverThread = new Thread(new Hashcraft(customLoggerPrintStream, hashcraftLogger)::start);
         serverThread.setName("Proxy-Thread");
@@ -103,13 +99,5 @@ public final class HashcraftProxyStarter {
             e.printStackTrace();
             return false;
         }
-    }
-
-    /**
-     * This function will be executed when the software closes. It will also save the logs before the software loses them.
-     */
-    private static void onShutdown() {
-        hashcraftLogger.info("Saving and stopping the proxy server...");
-        hashcraftLogger.saveLogger(); // Save the logger before closing
     }
 }

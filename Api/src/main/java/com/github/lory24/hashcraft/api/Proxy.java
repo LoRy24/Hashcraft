@@ -1,5 +1,6 @@
 package com.github.lory24.hashcraft.api;
 
+import com.github.lory24.hashcraft.api.plugin.PluginsManager;
 import com.github.lory24.hashcraft.api.scheduler.Scheduler;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,4 +38,9 @@ public abstract class Proxy {
      * Return the scheduler object
      */
     public abstract Scheduler getScheduler();
+
+    /**
+     * Return the plugins' manager instanced object
+     */
+    public abstract PluginsManager getPluginsManager();
 }

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class HashcraftScheduler extends Scheduler {
 
     /**
@@ -231,5 +232,28 @@ public class HashcraftScheduler extends Scheduler {
 
         // Unregister the task from the internal tasks register
         this.internalTasksThreads.remove(taskId);
+    }
+
+    /**
+     * This protected function will kill all the tasks created by a plugin
+     *
+     * @param plugin The plugin obj
+     */
+    protected void unregisterPlugin(final ProxyPlugin plugin) {
+        // If the owned hashmap doesn't contain the plugin, do nothing
+        if (!this.pluginsOwnedTasksIds.containsKey(plugin)) return;
+
+        // Cancel all the tasks
+        this.pluginsOwnedTasksIds.get(plugin).forEach(this::cancelTask); // Lambda goes brr
+
+        // Remove the plugin from the owned hashmap
+        this.pluginsOwnedTasksIds.remove(plugin);
+    }
+
+    /**
+     * Protected function that will cancel all the tasks
+     */
+    protected void cancelAllTasks() {
+        this.tasksThreads.forEach((id, thread) -> cancelTask(id)); // Cancel the tasks
     }
 }

@@ -8,6 +8,7 @@ import com.github.lory24.hashcraft.protocol.packet.*;
 import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyHandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginDisconnectPacket;
+import com.github.lory24.hashcraft.protocol.packet.login.LoginStartPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusRequestPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusResponsePacket;
@@ -103,11 +104,8 @@ public class InitialHandler extends PacketHandler {
                 this.setState(InitialHandlerState.LOGIN);
                 this.channelWrapper.updateProtocolUtils(ProtocolUtils.LOGIN);
 
-                // Send back a disconnect packet
-                this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe Proxy is not configured to allow login connection.\nPlease try again later!")));
-
-                // Close the channel
-                this.channelWrapper.close();
+                // Notify the incoming connection
+                this.getProxy().getLogger().info(this.channelWrapper.getRemoteAddress() + " has connected.");
             }
 
 
@@ -137,7 +135,7 @@ public class InitialHandler extends PacketHandler {
 
         // Create the status response object
         ServerListPingResponse response = new ServerListPingResponse(new ServerListPingResponse.ServerListVersion("Hashcraft 1.0-SNAPSHOT", 47),
-                new ServerListPingResponse.ServerListPlayers(100, 0, null),
+                new ServerListPingResponse.ServerListPlayers((Integer) ProxyConfiguration.MAX_PLAYERS_AMOUNT.get(), 0, null),
                 new TextChatComponent(ProxyConfiguration.SERVER_MESSAGE_OF_THE_DAY.getStringWithColors()), null);
 
         // Write the packet
@@ -189,6 +187,23 @@ public class InitialHandler extends PacketHandler {
     public void handle(LegacyHandshakePacket legacyHandshakePacket) {
         this.legacy = true;
         this.channelWrapper.close("Unsupported client"); // Version is too old
+    }
+
+    /**
+     * This function will handle the login start packet
+     *
+     * @param loginStartPacket The login start packet
+     */
+    @Override
+    public void handle(@NotNull LoginStartPacket loginStartPacket) {
+        // Sout the username just for testing
+        System.out.println(loginStartPacket.getName());
+
+        // Send back a disconnect packet
+        this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe Proxy is not configured to allow login connection.\nPlease try again later!")));
+
+        // Close the channel
+        this.channelWrapper.close();
     }
 
     /**

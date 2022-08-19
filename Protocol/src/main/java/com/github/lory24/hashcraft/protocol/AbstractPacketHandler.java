@@ -3,6 +3,7 @@ package com.github.lory24.hashcraft.protocol;
 import com.github.lory24.hashcraft.protocol.packet.*;
 import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyHandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyPingPacket;
+import com.github.lory24.hashcraft.protocol.packet.login.LoginStartPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusRequestPacket;
 
@@ -46,4 +47,11 @@ public abstract class AbstractPacketHandler {
      * @param statusPingPacket The ping packet
      */
     public void handle(final StatusPingPacket statusPingPacket) {}
+
+    /**
+     * This function will handle the login start packet
+     *
+     * @param loginStartPacket The login start packet
+     */
+    public void handle(final LoginStartPacket loginStartPacket) {}
 }

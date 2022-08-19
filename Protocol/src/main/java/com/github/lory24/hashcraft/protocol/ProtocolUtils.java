@@ -2,6 +2,7 @@ package com.github.lory24.hashcraft.protocol;
 
 import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginDisconnectPacket;
+import com.github.lory24.hashcraft.protocol.packet.login.LoginStartPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusRequestPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusResponsePacket;
@@ -46,6 +47,11 @@ public enum ProtocolUtils {
     LOGIN
     {
         {
+            /*
+             * TO SERVER
+             */
+            getToServer().registerPacket(LoginStartPacket.class);
+
             /*
              * TO CLIENT
              */
@@ -97,7 +103,7 @@ public enum ProtocolUtils {
             try {
                 return this.registeredPackets.get(id).getConstructor().newInstance();
             }
-            catch (NullPointerException ignored) {
+            catch (NullPointerException | IndexOutOfBoundsException ignored) {
                 // If the packet doesn't exist, return null
                 return null;
             }

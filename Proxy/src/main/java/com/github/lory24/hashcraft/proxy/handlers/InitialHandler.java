@@ -8,7 +8,6 @@ import com.github.lory24.hashcraft.protocol.packet.*;
 import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyHandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginDisconnectPacket;
-import com.github.lory24.hashcraft.protocol.packet.login.LoginSetCompressionPacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginStartPacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginSuccessPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusPingPacket;

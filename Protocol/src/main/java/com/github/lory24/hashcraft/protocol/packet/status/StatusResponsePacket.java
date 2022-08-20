@@ -3,17 +3,17 @@ package com.github.lory24.hashcraft.protocol.packet.status;
 import com.github.lory24.hashcraft.protocol.AbstractPacketHandler;
 import com.github.lory24.hashcraft.protocol.Packet;
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class StatusResponsePacket extends Packet {
 
     /**
      * The response string
      */
     private String jsonResponse;
-
-    public StatusResponsePacket(String jsonResponse) {
-        this.jsonResponse = jsonResponse;
-    }
 
     /**
      * Read the data from a bytebuf into the packet object.

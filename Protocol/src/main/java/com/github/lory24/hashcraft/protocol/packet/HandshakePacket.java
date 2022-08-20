@@ -3,10 +3,14 @@ package com.github.lory24.hashcraft.protocol.packet;
 import com.github.lory24.hashcraft.protocol.AbstractPacketHandler;
 import com.github.lory24.hashcraft.protocol.Packet;
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class HandshakePacket extends Packet {
 
     // See https://wiki.vg/index.php?title=Protocol&oldid=7368#Handshake for more details

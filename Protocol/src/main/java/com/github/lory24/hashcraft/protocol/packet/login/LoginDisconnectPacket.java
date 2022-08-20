@@ -6,7 +6,9 @@ import com.github.lory24.hashcraft.protocol.Packet;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @AllArgsConstructor
 public class LoginDisconnectPacket extends Packet {
 

@@ -3,8 +3,12 @@ package com.github.lory24.hashcraft.protocol.packet.status;
 import com.github.lory24.hashcraft.protocol.AbstractPacketHandler;
 import com.github.lory24.hashcraft.protocol.Packet;
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+@NoArgsConstructor
+@AllArgsConstructor
 public class StatusPingPacket extends Packet {
 
     /**

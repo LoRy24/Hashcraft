@@ -232,6 +232,13 @@ public class InitialHandler extends PacketHandler {
      */
     private void finishLogin() {
 
+        // If the connection is in onilne mode
+        if (onlineMode) {
+            // Close the channel & return
+            this.channelWrapper.close();
+            return;
+        }
+
         // If a user with that username has already connected
         if (this.proxy.getPlayers().containsKey(this.loginStart.getName())) {
             // Send back a disconnect packet
@@ -242,22 +249,12 @@ public class InitialHandler extends PacketHandler {
             return;
         }
 
-        // If the connection is in onilne mode
-        if (onlineMode) {
-            // Close the channel & return
-            this.channelWrapper.close();
-            return;
-        }
-
-        // Generate a new uuid for the new user
-        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.loginStart.getName()).getBytes(StandardCharsets.UTF_8));
-
         // Register the new player
-        final HashcraftPlayer hashcraftPlayer = new HashcraftPlayer(this.loginStart.getName(), uuid, this.channelWrapper);
+        final HashcraftPlayer hashcraftPlayer = new HashcraftPlayer(this.loginStart.getName(), UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.loginStart.getName()).getBytes(StandardCharsets.UTF_8)), this.channelWrapper);
         hashcraftPlayer.setCompression(256); // Default value
 
         // Send the login success packet
-        this.channelWrapper.write(new LoginSuccessPacket(uuid.toString(), this.loginStart.getName()));
+        this.channelWrapper.write(new LoginSuccessPacket(hashcraftPlayer.getUuid().toString(), this.loginStart.getName()));
 
         // Register the player in the proxy object
         this.proxy.getPlayers().put(this.loginStart.getName(), hashcraftPlayer);

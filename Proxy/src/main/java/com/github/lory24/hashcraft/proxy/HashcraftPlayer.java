@@ -19,6 +19,7 @@ public class HashcraftPlayer extends ProxiedPlayer {
     /**
      * The uuid in the proxy
      */
+    @Getter
     private final UUID uuid;
 
     /**

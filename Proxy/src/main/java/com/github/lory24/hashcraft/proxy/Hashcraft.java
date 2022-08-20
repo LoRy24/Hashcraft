@@ -17,6 +17,7 @@ import lombok.Getter;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 /**
@@ -54,6 +55,12 @@ public class Hashcraft extends Proxy {
      */
     @Getter
     private HashcraftPluginsManager hashcraftPluginsManager;
+
+    /**
+     * A hashmap containing all the connected players
+     */
+    @Getter
+    private final HashMap<String, HashcraftPlayer> players = new HashMap<>();
 
     /**
      * Inject the values instanced in the HashcraftProxyStarter
@@ -127,7 +134,7 @@ public class Hashcraft extends Proxy {
             // Start the bootstrap
             new ServerBootstrap()
                     .group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                    .childHandler(new HashcraftChannelInitializer()).localAddress(new InetSocketAddress(host, port)).bind().addListener(channelFutureListener)
+                    .childHandler(new HashcraftChannelInitializer(this)).localAddress(new InetSocketAddress(host, port)).bind().addListener(channelFutureListener)
                     .sync().channel().closeFuture().sync();
         }
         catch (InterruptedException e) {
@@ -183,5 +190,13 @@ public class Hashcraft extends Proxy {
 
         // Final notify
         System.out.println("Done. Bye!");
+    }
+
+    /**
+     * Return the amount of online players
+     */
+    @Override
+    public int getPlayersCount() {
+        return this.players.size();
     }
 }

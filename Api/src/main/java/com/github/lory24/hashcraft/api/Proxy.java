@@ -43,4 +43,9 @@ public abstract class Proxy {
      * Return the plugins' manager instanced object
      */
     public abstract PluginsManager getPluginsManager();
+
+    /**
+     * Return the amount of online players
+     */
+    public abstract int getPlayersCount();
 }

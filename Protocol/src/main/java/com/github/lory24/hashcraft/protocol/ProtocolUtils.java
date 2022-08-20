@@ -2,7 +2,9 @@ package com.github.lory24.hashcraft.protocol;
 
 import com.github.lory24.hashcraft.protocol.packet.HandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginDisconnectPacket;
+import com.github.lory24.hashcraft.protocol.packet.login.LoginSetCompressionPacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginStartPacket;
+import com.github.lory24.hashcraft.protocol.packet.login.LoginSuccessPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusRequestPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusResponsePacket;
@@ -51,13 +53,15 @@ public enum ProtocolUtils {
              * TO SERVER
              */
             getToServer().registerPacket(LoginStartPacket.class);
+            getToServer().registerPacket(null); // Encryption response not supported
 
             /*
              * TO CLIENT
              */
             getToClient().registerPacket(LoginDisconnectPacket.class);
             getToClient().registerPacket(null); // Encryption request not supported
-
+            getToClient().registerPacket(LoginSuccessPacket.class);
+            getToClient().registerPacket(LoginSetCompressionPacket.class);
         }
     }
     ;

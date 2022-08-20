@@ -1,9 +1,6 @@
 package com.github.lory24.hashcraft.proxy.netty;
 
-import com.github.lory24.hashcraft.protocol.MinecraftPacketDecoder;
-import com.github.lory24.hashcraft.protocol.MinecraftPacketEncoder;
-import com.github.lory24.hashcraft.protocol.PacketWrapper;
-import com.github.lory24.hashcraft.protocol.ProtocolUtils;
+import com.github.lory24.hashcraft.protocol.*;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import lombok.Getter;
@@ -17,6 +14,7 @@ public class ChannelWrapper {
     /**
      * The channel obj
      */
+    @Getter
     private final Channel channel;
 
     /**
@@ -99,5 +97,31 @@ public class ChannelWrapper {
         }
 
         this.channel.flush().close(); // Flush and close the channel
+    }
+
+    /**
+     * This function will be used to set up the compression system. This function will be called when finishing the login
+     * state, so this function will also send the set-compression packet.
+     *
+     * @param threshold The threshold number.
+     */
+    public void setCompression(final int threshold) {
+
+        // If the PacketDecompressor isn't in the pipeline, and the threshold isn't -1
+        if (this.channel.pipeline().get(PacketDecompressor.class) == null && threshold != -1) {
+            // Flush and add the packet decompressor to the pipeline
+            this.channel.pipeline().flush().addBefore("minecraft-decoder", "packet-decompressor", new PacketDecompressor());
+        }
+
+        // If the PacketCompressor isn't in the pipeline, and the threshold isn't -1
+        if (this.channel.pipeline().get(PacketCompressor.class) == null && threshold != -1) {
+            // Flush and add the packet compressor to the pipeline
+            this.channel.pipeline().flush().addBefore("minecraft-encoder", "packet-compressor", new PacketCompressor());
+        }
+
+        // If the threshold is not negative, set the compression threshold
+        if (threshold != -1) {
+            this.channel.pipeline().get(PacketCompressor.class).setThreshold(threshold);
+        }
     }
 }

@@ -8,12 +8,17 @@ import com.github.lory24.hashcraft.protocol.packet.*;
 import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyHandshakePacket;
 import com.github.lory24.hashcraft.protocol.packet.legacy.LegacyPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginDisconnectPacket;
+import com.github.lory24.hashcraft.protocol.packet.login.LoginSetCompressionPacket;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginStartPacket;
+import com.github.lory24.hashcraft.protocol.packet.login.LoginSuccessPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusPingPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusRequestPacket;
 import com.github.lory24.hashcraft.protocol.packet.status.StatusResponsePacket;
+import com.github.lory24.hashcraft.proxy.Hashcraft;
+import com.github.lory24.hashcraft.proxy.HashcraftPlayer;
 import com.github.lory24.hashcraft.proxy.impl.ProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
+import com.github.lory24.hashcraft.proxy.netty.HashcraftProxyHandler;
 import com.github.lory24.hashcraft.proxy.netty.PacketHandler;
 import com.github.lory24.hashcraft.proxy.utils.InitialHandlerState;
 import com.google.gson.Gson;
@@ -23,6 +28,9 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+
 @RequiredArgsConstructor
 public class InitialHandler extends PacketHandler {
 
@@ -30,7 +38,7 @@ public class InitialHandler extends PacketHandler {
      * An instance of the proxy obj
      */
     @Getter
-    private final Proxy proxy;
+    private final Hashcraft proxy;
 
     /**
      * The ChannelWrapper obj
@@ -141,7 +149,7 @@ public class InitialHandler extends PacketHandler {
 
         // Create the status response object
         ServerListPingResponse response = new ServerListPingResponse(new ServerListPingResponse.ServerListVersion("Hashcraft 1.0-SNAPSHOT", 47),
-                new ServerListPingResponse.ServerListPlayers((Integer) ProxyConfiguration.MAX_PLAYERS_AMOUNT.get(), 0, null),
+                new ServerListPingResponse.ServerListPlayers((Integer) ProxyConfiguration.MAX_PLAYERS_AMOUNT.get(), Proxy.getInstance().getPlayersCount(), null),
                 new TextChatComponent(ProxyConfiguration.SERVER_MESSAGE_OF_THE_DAY.getStringWithColors()), null);
 
         // Write the packet
@@ -223,11 +231,43 @@ public class InitialHandler extends PacketHandler {
      * Internal function to finish the login process
      */
     private void finishLogin() {
-        // Send back a disconnect packet
-        this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe Proxy is not configured to allow login connection.\nPlease try again later!")));
 
-        // Close the channel
-        this.channelWrapper.close();
+        // If a user with that username has already connected
+        if (this.proxy.getPlayers().containsKey(this.loginStart.getName())) {
+            // Send back a disconnect packet
+            this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThis username has already taken!")));
+
+            // Close the channel and return
+            this.channelWrapper.close();
+            return;
+        }
+
+        // If the connection is in onilne mode
+        if (onlineMode) {
+            // Close the channel & return
+            this.channelWrapper.close();
+            return;
+        }
+
+        // Generate a new uuid for the new user
+        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.loginStart.getName()).getBytes(StandardCharsets.UTF_8));
+
+        // Register the new player
+        final HashcraftPlayer hashcraftPlayer = new HashcraftPlayer(this.loginStart.getName(), uuid, this.channelWrapper);
+        hashcraftPlayer.setCompression(256); // Default value
+
+        // Send the login success packet
+        this.channelWrapper.write(new LoginSuccessPacket(uuid.toString(), this.loginStart.getName()));
+
+        // Register the player in the proxy object
+        this.proxy.getPlayers().put(this.loginStart.getName(), hashcraftPlayer);
+
+        // Change the handler to the new one
+        this.channelWrapper.getChannel().pipeline().get(HashcraftProxyHandler.class).setPacketHandler(new ToClientConnectionHandler(this.proxy.getPlayers().get(this.loginStart.getName())));
+
+        // Notify that the user has joined the proxy
+        this.proxy.getLogger().info(this.channelWrapper.getRemoteAddress() + " has joined with username: " +
+                this.loginStart.getName());
     }
 
     /**

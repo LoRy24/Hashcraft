@@ -192,7 +192,7 @@ public class InitialHandler extends PacketHandler {
     }
 
     /**
-     * This function will handle the legacy handshake packet.
+     * This function will handle the legacy handshake packet
      *
      * @param legacyHandshakePacket The legacy handshake packet
      */

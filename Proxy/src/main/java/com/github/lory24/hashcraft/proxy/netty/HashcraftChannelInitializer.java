@@ -1,9 +1,10 @@
 package com.github.lory24.hashcraft.proxy.netty;
 
-import com.github.lory24.hashcraft.api.Proxy;
 import com.github.lory24.hashcraft.protocol.*;
 import com.github.lory24.hashcraft.proxy.Hashcraft;
 import com.github.lory24.hashcraft.proxy.handlers.InitialHandler;
+import com.github.lory24.hashcraft.proxy.utils.NettyPipelineUtilities;
+import com.github.lory24.hashcraft.proxy.utils.netty.PipelineItems;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -25,27 +26,23 @@ public class HashcraftChannelInitializer extends ChannelInitializer<SocketChanne
      * @param socketChannel The future socket channel
      */
     @Override
-    protected void initChannel(@NotNull SocketChannel socketChannel) {
+    protected void initChannel(@NotNull SocketChannel socketChannel) throws Exception {
         // Define a reference to the channelPipeline
         ChannelPipeline channelPipeline = socketChannel.pipeline();
 
-        // Add the legacy decoder
-        channelPipeline.addLast("legacy-decoder", new MinecraftLegacyDecoder());
+        // Initialize standard minecraft pipeline
+        NettyPipelineUtilities.baseChannelInitialize.initChannel(socketChannel);
 
-        // Add the frame decoder.
-        channelPipeline.addLast("frame-decoder", new FrameDecoder());
+        // Add the legacy decoder
+        channelPipeline.addBefore(PipelineItems.FRAME_DECODER.toString(), PipelineItems.LEGACY_DECODER.toString(), new MinecraftLegacyDecoder());
 
         // Add the minecraft decoder
-        channelPipeline.addLast("minecraft-decoder", new MinecraftPacketDecoder(ProtocolUtils.HANDSHAKE, true));
-
-        // Add the frame encoder
-        channelPipeline.addLast("frame-encoder", new FrameEncoder());
+        channelPipeline.addAfter(PipelineItems.FRAME_DECODER.toString(), PipelineItems.MINECRAFT_DECODER.toString(), new MinecraftPacketDecoder(ProtocolUtils.HANDSHAKE, true));
 
         // Add the minecraft encoder
-        channelPipeline.addLast("minecraft-encoder", new MinecraftPacketEncoder(ProtocolUtils.HANDSHAKE, true));
+        channelPipeline.addAfter(PipelineItems.FRAME_ENCODER.toString(), PipelineItems.MINECRAFT_ENCODER.toString(), new MinecraftPacketEncoder(ProtocolUtils.HANDSHAKE, true));
 
-        // Add the HashcraftProxyHandler and set the initial packetHandler
-        channelPipeline.addLast("handler", new HashcraftProxyHandler());
+        // Set the initial handler
         channelPipeline.get(HashcraftProxyHandler.class).setPacketHandler(new InitialHandler(this.hashcraft));
 
     }

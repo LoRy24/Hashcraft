@@ -29,6 +29,12 @@ public class HashcraftPlayer extends ProxiedPlayer {
     private final ChannelWrapper channel;
 
     /**
+     * The channel wrapper that contains the channel connected to the sub server
+     */
+    @Getter
+    private ChannelWrapper subServerChannelWrapper;
+
+    /**
      * Return the name of the player
      */
     @Override

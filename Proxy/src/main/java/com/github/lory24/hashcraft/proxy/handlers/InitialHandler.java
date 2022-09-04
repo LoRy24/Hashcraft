@@ -212,6 +212,14 @@ public class InitialHandler extends PacketHandler {
         // Instance the LoginStartPacket value in this class
         this.loginStart = loginStartPacket;
 
+        // If the username is too big
+        if (loginStartPacket.getName().length() > 16) {
+            // Kick the player and return
+            this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cThe username is too big! Maximum caracters: 16")));
+            this.channelWrapper.close();
+            return;
+        }
+
         // If the initial handler is set to online mode, start the encryption procedure (Currently not developed)
         if (this.onlineMode) {
 

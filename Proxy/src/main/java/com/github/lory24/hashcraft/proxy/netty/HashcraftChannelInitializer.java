@@ -30,6 +30,12 @@ public class HashcraftChannelInitializer extends ChannelInitializer<SocketChanne
         // Define a reference to the channelPipeline
         ChannelPipeline channelPipeline = socketChannel.pipeline();
 
+        // If the connection is in throttle, close the connection
+        if (this.hashcraft.getConnectionThrottleSystem().makeThrottleConnection(socketChannel.remoteAddress().getAddress())) {
+            socketChannel.close();
+            return;
+        }
+
         // Initialize standard minecraft pipeline
         NettyPipelineUtilities.baseChannelInitialize.initChannel(socketChannel);
 

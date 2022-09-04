@@ -3,6 +3,7 @@ package com.github.lory24.hashcraft.proxy;
 import com.github.lory24.hashcraft.api.Proxy;
 import com.github.lory24.hashcraft.api.plugin.PluginsManager;
 import com.github.lory24.hashcraft.api.scheduler.Scheduler;
+import com.github.lory24.hashcraft.proxy.features.ConnectionThrottleSystem;
 import com.github.lory24.hashcraft.proxy.impl.HashcraftProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.impl.ProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.logger.CustomLoggerPrintStream;
@@ -63,6 +64,12 @@ public class Hashcraft extends Proxy {
     private final HashMap<String, HashcraftPlayer> players = new HashMap<>();
 
     /**
+     * The connection throttle system. Used in the client -> proxy channel
+     */
+    @Getter
+    private final ConnectionThrottleSystem connectionThrottleSystem;
+
+    /**
      * Inject the values instanced in the HashcraftProxyStarter
      *
      * @param customLoggerPrintStream The custom printStream object. Used to capture "everything" that is printed in the console
@@ -72,6 +79,7 @@ public class Hashcraft extends Proxy {
         this.customLoggerPrintStream = customLoggerPrintStream;
         this.hashcraftLogger = hashcraftLogger;
         this.configFile = new File("./config.yml");
+        this.connectionThrottleSystem = new ConnectionThrottleSystem(this);
     }
 
     /**

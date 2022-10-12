@@ -1,5 +1,6 @@
 package com.github.lory24.hashcraft.proxy.handlers;
 
+import com.github.lory24.hashcraft.protocol.PacketWrapper;
 import com.github.lory24.hashcraft.proxy.Hashcraft;
 import com.github.lory24.hashcraft.proxy.HashcraftPlayer;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
@@ -28,5 +29,16 @@ public class ToClientConnectionHandler extends PacketHandler {
 
         // Notify that the player has disconnected
         Hashcraft.getInstance().getLogger().info("User " + player.getUsername() + " (" + player.getChannel().getRemoteAddress() + ") has disconnected form the proxy!");
+    }
+
+
+    /**
+     * This function will handle a PacketWrapper
+     *
+     * @param packetWrapper The packet wrapper to handle
+     */
+    @Override
+    public void handle(PacketWrapper packetWrapper) {
+        // Should send the packetWrapper's buffer to the sub server if it's ready
     }
 }

@@ -223,14 +223,16 @@ public class InitialHandler extends PacketHandler {
         // If the initial handler is set to online mode, start the encryption procedure (Currently not developed)
         if (this.onlineMode) {
 
-            // Send back a disconnect packet
-            this.channelWrapper.write(new LoginDisconnectPacket(new TextChatComponent("§cOnline mode not supported!")));
-
-            // Close the channel
-            this.channelWrapper.close();
+            // Send back a disconnect packet and close connection
+            this.channelWrapper.close(new LoginDisconnectPacket(new TextChatComponent("§cOnline mode not supported!")));
         }
         else { // Otherwise, jump to the finishLogin function
-            this.finishLogin();
+
+            // Send back a disconnect packet
+            this.channelWrapper.close(new LoginDisconnectPacket(new TextChatComponent("§8§l§kaa§r §c§lComing Soon! §8§l§kaa§r")));
+
+            // Finish the login process
+             this.finishLogin();
         }
     }
 
@@ -238,6 +240,11 @@ public class InitialHandler extends PacketHandler {
      * Internal function to finish the login process
      */
     private void finishLogin() {
+
+        // Check if the channel is closed
+        if (channelWrapper.isClosed()) {
+            return;
+        }
 
         // If the connection is in onilne mode
         if (onlineMode) {

@@ -200,6 +200,7 @@ public class HashcraftScheduler extends Scheduler {
      * @param task The task that should be run
      * @return a new scheduler task obj
      */
+    @SuppressWarnings("UnusedReturnValue")
     public SchedulerTask runInternalTaskAsyncrously(Runnable task) {
         // Generate a new task id
         int taskId = this.generateId(this.internalTasksThreads);

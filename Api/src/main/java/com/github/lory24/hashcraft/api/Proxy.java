@@ -2,6 +2,7 @@ package com.github.lory24.hashcraft.api;
 
 import com.github.lory24.hashcraft.api.plugin.PluginsManager;
 import com.github.lory24.hashcraft.api.scheduler.Scheduler;
+import com.github.lory24.hashcraft.api.util.SubServer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,4 +49,11 @@ public abstract class Proxy {
      * Return the amount of online players
      */
     public abstract int getPlayersCount();
+
+    /**
+     * This functions returns the info of a registered server in the network.
+     *
+     * @param name The name of the registered server
+     */
+    public abstract SubServer getServer(String name);
 }

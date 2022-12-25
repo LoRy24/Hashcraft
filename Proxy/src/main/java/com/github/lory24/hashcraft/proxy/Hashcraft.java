@@ -3,6 +3,7 @@ package com.github.lory24.hashcraft.proxy;
 import com.github.lory24.hashcraft.api.Proxy;
 import com.github.lory24.hashcraft.api.plugin.PluginsManager;
 import com.github.lory24.hashcraft.api.scheduler.Scheduler;
+import com.github.lory24.hashcraft.api.util.SubServer;
 import com.github.lory24.hashcraft.proxy.features.ConnectionThrottleSystem;
 import com.github.lory24.hashcraft.proxy.impl.HashcraftProxyConfiguration;
 import com.github.lory24.hashcraft.proxy.impl.ProxyConfiguration;
@@ -70,6 +71,11 @@ public class Hashcraft extends Proxy {
     private final ConnectionThrottleSystem connectionThrottleSystem;
 
     /**
+     * The HashMap containing all the sub servers objects identified by the name of each server
+     */
+    private final HashMap<String, SubServer> subServerInfos = new HashMap<>();
+
+    /**
      * Inject the values instanced in the HashcraftProxyStarter
      *
      * @param customLoggerPrintStream The custom printStream object. Used to capture "everything" that is printed in the console
@@ -95,7 +101,11 @@ public class Hashcraft extends Proxy {
         // Load the Proxy configuration
         this.hashcraftConfiguration = new HashcraftProxyConfiguration(this.configFile); // Instance the hashcraft configuration object
         this.hashcraftConfiguration.loadConfiguration(); // Load data
-        this.getLogger().info("Configuration loaded! Loading plugins...");
+        this.getLogger().info("Configuration loaded! Loading servers...");
+
+        // Load the servers from the configuration
+        // TODO
+        this.getLogger().info("Servers loaded! Loading plugins...");
 
         // Load the plugins
         this.hashcraftPluginsManager = new HashcraftPluginsManager(this);
@@ -206,5 +216,15 @@ public class Hashcraft extends Proxy {
     @Override
     public int getPlayersCount() {
         return this.players.size();
+    }
+
+    /**
+     * This functions returns the info of a registered server in the network.
+     *
+     * @param name The name of the registered server
+     */
+    @Override
+    public SubServer getServer(String name) {
+        return this.subServerInfos.get(name);
     }
 }

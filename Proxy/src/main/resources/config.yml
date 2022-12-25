@@ -25,6 +25,24 @@ settings:
     maxPlayersAmount: 200
 
   #
+  # This value is the server where the Proxy tries to send the players when they join the network.
+  #
+  onJoinServer: "lobby"
+
+  #
+  # The servers that are going to get registered in the Proxy's sub-servers register. These servers should have the
+  # 'bungeecord' option enabled.
+  #
+  servers:
+
+    #
+    # This is a sample server
+    #
+    lobby:
+      host: "127.0.0.1"
+      port: 25565
+
+  #
   # The host where the proxy should start listening on
   #
   # Value: IPv4 address

@@ -229,10 +229,10 @@ public class InitialHandler extends PacketHandler {
         else { // Otherwise, jump to the finishLogin function
 
             // Send back a disconnect packet
-            this.channelWrapper.close(new LoginDisconnectPacket(new TextChatComponent("§8§l§kaa§r §c§lComing Soon! §8§l§kaa§r")));
+            //this.channelWrapper.close(new LoginDisconnectPacket(new TextChatComponent("§8§l§kaa§r §c§lComing Soon! §8§l§kaa§r")));
 
             // Finish the login process
-             this.finishLogin();
+            this.finishLogin();
         }
     }
 
@@ -246,7 +246,7 @@ public class InitialHandler extends PacketHandler {
             return;
         }
 
-        // If the connection is in onilne mode
+        // If the connection is in online mode
         if (onlineMode) {
             // Close the channel & return
             this.channelWrapper.close();

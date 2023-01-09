@@ -26,7 +26,7 @@ public class YamlConfig {
      *
      * @param file The file where the YAML data is located
      * @return This YamlConfig object
-     * @throws FileNotFoundException If there is an error while creating the FileInputStream. This can occour when the
+     * @throws FileNotFoundException If there is an error while creating the FileInputStream. This can occur when the
      *         file doesn't exist
      */
     public YamlConfig loadConfig(final File file) throws FileNotFoundException {

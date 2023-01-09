@@ -63,7 +63,14 @@ public enum ProtocolUtils {
             getToClient().registerPacket(LoginSuccessPacket.class);
             getToClient().registerPacket(LoginSetCompressionPacket.class);
         }
-    }
+    },
+
+    GAME_PROXY_TO_CLIENT
+    {
+        {
+
+        }
+    },
     ;
 
     // The packets directions

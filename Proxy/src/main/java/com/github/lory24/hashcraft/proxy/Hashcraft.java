@@ -20,6 +20,7 @@ import lombok.Getter;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -93,6 +94,12 @@ public class Hashcraft extends Proxy {
      */
     protected void start() {
 
+        // Set the Proxy INSTANCE in the API
+        Proxy.setInstance(this);
+
+        // Add the shutdown task
+        Runtime.getRuntime().addShutdownHook(new Thread(this::onShutdown));
+
         // Load the scheduler
         this.getLogger().info("Loading the scheduler...");
         this.hashcraftScheduler = new HashcraftScheduler();
@@ -104,20 +111,17 @@ public class Hashcraft extends Proxy {
         this.getLogger().info("Configuration loaded! Loading servers...");
 
         // Load the servers from the configuration
-        // TODO
+        if (!loadServersFromConfig()) {
+            this.getLogger().info("Error while loading sub-servers! Closing the proxy...");
+            Runtime.getRuntime().exit(0);
+            return;
+        }
         this.getLogger().info("Servers loaded! Loading plugins...");
 
         // Load the plugins
         this.hashcraftPluginsManager = new HashcraftPluginsManager(this);
         this.hashcraftPluginsManager.loadAllPlugins();
         this.getLogger().info("Plugins loaded! Starting the proxy...");
-
-        // Add the shutdown task
-        Runtime.getRuntime().addShutdownHook(
-                new Thread(this::onShutdown));
-
-        // Set the Proxy INSTANCE in the API
-        Proxy.setInstance(this);
 
         // Launch the netty server
         this.startListening();
@@ -195,19 +199,56 @@ public class Hashcraft extends Proxy {
      */
     private void onShutdown() {
         // Unload all the plugins
-        this.getLogger().info("Closing the server: Disabling the plugins...");
-        this.hashcraftPluginsManager.unloadAllPlugins();
+        if (this.hashcraftPluginsManager != null) {
+            this.getLogger().info("Closing the server: Disabling the plugins...");
+            this.hashcraftPluginsManager.unloadAllPlugins();
+        }
 
         // Cancel all the tasks
-        this.getLogger().info("Plugins disabled! Cancelling all the scheduler tasks...");
-        this.hashcraftScheduler.cancelAllTasks();
+        if (this.hashcraftScheduler != null) {
+            this.getLogger().info("Cancelling all the scheduler tasks...");
+            this.hashcraftScheduler.cancelAllTasks();
+        }
 
         // Save the logger before closing
-        this.getLogger().info("Tasks cancelled. Saving logs.");
-        this.hashcraftLogger.saveLogger();
+        if (this.hashcraftLogger != null) {
+            this.getLogger().info("Saving logs...");
+            this.hashcraftLogger.saveLogger();
+        }
 
         // Final notify
         System.out.println("Done. Bye!");
+    }
+
+    /**
+     * This internal function loads the servers written in the config file and puts them in the HashMap defined in this
+     * class.
+     */
+    @SuppressWarnings("unchecked")
+    private boolean loadServersFromConfig() {
+        try {
+            HashMap<String, HashMap<String, Object>> servers = (HashMap<String, HashMap<String, Object>>) ProxyConfiguration.SERVERS.get();
+            AtomicBoolean status = new AtomicBoolean(true);
+
+            // Register the servers
+            servers.forEach((serverName, settings) -> {
+                if (!settings.containsKey("host") || !settings.containsKey("port")) {
+                    this.getLogger().warning("Invalid settings for server \"" + serverName + "\"! Check config before starting the server again.");
+                    status.set(false);
+                    return;
+                }
+
+                // Register the sub-server
+                this.subServerInfos.put(serverName, new SubServer(serverName, (String) settings.get("host"),
+                        (Integer) settings.get("port")));
+            });
+
+            // Success!
+            return status.get();
+        } catch (Exception ignored) {
+            // If an error occurs, returns false
+            return false;
+        }
     }
 
     /**

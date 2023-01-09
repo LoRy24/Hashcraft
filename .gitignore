@@ -36,3 +36,4 @@ build/
 
 ### Testing folder ###
 /test_folder/
+/debug/

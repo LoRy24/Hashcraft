@@ -279,6 +279,9 @@ public class InitialHandler extends PacketHandler {
         // Notify that the user has joined the proxy
         this.proxy.getLogger().info(this.channelWrapper.getRemoteAddress() + " has joined with username: " +
                 this.loginStart.getName());
+
+        // Attempt to connect the player to the first join server
+        hashcraftPlayer.connect(this.proxy.getOnJoinServer());
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.github.lory24.hashcraft.proxy;
 
 import com.github.lory24.hashcraft.api.ProxiedPlayer;
+import com.github.lory24.hashcraft.api.util.SubServer;
 import com.github.lory24.hashcraft.protocol.packet.login.LoginSetCompressionPacket;
 import com.github.lory24.hashcraft.proxy.netty.ChannelWrapper;
 import lombok.Getter;
@@ -35,11 +36,34 @@ public class HashcraftPlayer extends ProxiedPlayer {
     private ChannelWrapper subServerChannelWrapper;
 
     /**
+     * The player's current server
+     */
+    private SubServer currentServer;
+
+    /**
      * Return the name of the player
      */
     @Override
     public String getUsername() {
         return this.username;
+    }
+
+    /**
+     * Connects a player to a proxy sub-server. The server's info should be put in a SubServer object.
+     *
+     * @param subServer The sub-server where to connect the player
+     */
+    @Override
+    public void connect(SubServer subServer) {
+        // TODO
+    }
+
+    /**
+     * Returns the server where the player is connected. Null if he isn't connected anywhere
+     */
+    @Override
+    public SubServer getCurrentServer() {
+        return this.currentServer;
     }
 
     /**
@@ -52,7 +76,7 @@ public class HashcraftPlayer extends ProxiedPlayer {
         // Set compression only if the threshold isn't negative
         if (threshold >= 0) {
 
-            // Send the packet & enbable the compression on the channel wrapper
+            // Send the packet & enable the compression on the channel wrapper
             this.channel.write(new LoginSetCompressionPacket(threshold));
             this.channel.setCompression(threshold);
         }

@@ -110,8 +110,8 @@ public class Hashcraft extends Proxy {
         this.hashcraftConfiguration.loadConfiguration(); // Load data
         this.getLogger().info("Configuration loaded! Loading servers...");
 
-        // Load the servers from the configuration
-        if (!loadServersFromConfig()) {
+        // Load the servers from the configuration and check if everything went fine
+        if (!loadServersFromConfig() && this.getOnJoinServer() == null) {
             this.getLogger().info("Error while loading sub-servers! Closing the proxy...");
             Runtime.getRuntime().exit(0);
             return;
@@ -267,5 +267,12 @@ public class Hashcraft extends Proxy {
     @Override
     public SubServer getServer(String name) {
         return this.subServerInfos.get(name);
+    }
+
+    /**
+     * This function returns the onJoin sub-server, set in the proxy configuration
+     */
+    public SubServer getOnJoinServer() {
+        return this.subServerInfos.get((String) ProxyConfiguration.ON_JOIN_SERVER.get());
     }
 }

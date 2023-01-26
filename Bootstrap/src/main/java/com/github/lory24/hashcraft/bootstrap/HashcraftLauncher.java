@@ -7,7 +7,6 @@ import com.github.lory24.hashcraft.proxy.HashcraftProxyStarter;
  * check for additional parameters and to verify that the user is using the required version (for now it's Java 18).
  * If the program fails to run, it will print the error in the console.
  */
-@SuppressWarnings("SpellCheckingInspection")
 public class HashcraftLauncher {
 
     /**

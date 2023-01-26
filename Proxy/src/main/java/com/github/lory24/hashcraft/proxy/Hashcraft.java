@@ -26,49 +26,42 @@ import java.util.logging.Logger;
 /**
  * The Hashcraft proxy object. This is the core of the server
  */
+@Getter
 public class Hashcraft extends Proxy {
 
     /*
      * Internal fields. Used only for internal usage OR api
      */
 
-    @Getter
     private final CustomLoggerPrintStream customLoggerPrintStream;
 
-    @Getter
     private final HashcraftLogger hashcraftLogger;
 
-    @Getter
     private final File configFile;
 
     /**
      * The Hashcraft proxy configuration object. Contains all the settings of the proxy.
      */
-    @Getter
     private HashcraftProxyConfiguration hashcraftConfiguration;
 
     /**
      * The scheduler obj
      */
-    @Getter
     private HashcraftScheduler hashcraftScheduler;
 
     /**
      * The plugins' manager obj
      */
-    @Getter
     private HashcraftPluginsManager hashcraftPluginsManager;
 
     /**
      * A hashmap containing all the connected players
      */
-    @Getter
     private final HashMap<String, HashcraftPlayer> players = new HashMap<>();
 
     /**
      * The connection throttle system. Used in the client -> proxy channel
      */
-    @Getter
     private final ConnectionThrottleSystem connectionThrottleSystem;
 
     /**
@@ -116,6 +109,9 @@ public class Hashcraft extends Proxy {
             Runtime.getRuntime().exit(0);
             return;
         }
+
+        // Send messages
+        this.debug("Loaded servers: " + this.subServerInfos.keySet());
         this.getLogger().info("Servers loaded! Loading plugins...");
 
         // Load the plugins
@@ -249,6 +245,16 @@ public class Hashcraft extends Proxy {
             // If an error occurs, returns false
             return false;
         }
+    }
+
+    /**
+     * Sends a debug message only if it's enabled in the config file.
+     *
+     * @param message The debug message
+     */
+    public void debug(String message) {
+        // If enabled, send the message
+        if (ProxyConfiguration.DEBUG.getBoolean()) this.getLogger().info("[DEBUG] " + message);
     }
 
     /**

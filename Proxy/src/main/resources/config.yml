@@ -5,6 +5,11 @@
 settings:
 
   #
+  # Enable debug messages
+  #
+  debug: true
+
+  #
   # The options about the server list pint. In this section you can edit options such as the Message of the day, the
   # server brand and the maximum amount of players.
   #

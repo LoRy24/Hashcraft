@@ -20,6 +20,7 @@ public enum ProxyConfiguration {
     MAX_PLAYERS_AMOUNT("settings.serverListPing.maxPlayersAmount"),
     ON_JOIN_SERVER("settings.onJoinServer"),
     SERVERS("settings.servers"),
+    DEBUG("settings.debug"),
     ;
 
     /**
@@ -34,6 +35,13 @@ public enum ProxyConfiguration {
      */
     public Object get() {
         return ((Hashcraft) Hashcraft.getInstance()).getHashcraftConfiguration().getYamlConfigurationData().get(this.path);
+    }
+
+    /**
+     * Return a boolean value from config
+     */
+    public boolean getBoolean() {
+        return (boolean) this.get();
     }
 
     /**
